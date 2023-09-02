@@ -225,6 +225,12 @@
     <ClCompile Include="graphics\FrameBuffer.cpp">
       <Filter>graphics</Filter>
     </ClCompile>
+    <ClCompile Include="mySourceCode\ModelRender.cpp">
+      <Filter>mySourceCode</Filter>
+    </ClCompile>
+    <ClCompile Include="mySourceCode\IRenderer.cpp">
+      <Filter>mySourceCode</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="k2EngineLowPreCompile.h" />
@@ -499,6 +505,13 @@
     <ClInclude Include="graphics\FrameBuffer.h">
       <Filter>graphics</Filter>
     </ClInclude>
+    <ClInclude Include="mySourceCode\ModelRender.h">
+      <Filter>mySourceCode</Filter>
+    </ClInclude>
+    <ClInclude Include="mySourceCode\IRenderer.h">
+      <Filter>mySourceCode</Filter>
+    </ClInclude>
+    <ClInclude Include="util\Noncopyable.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="graphics">
@@ -557,6 +570,9 @@
     </Filter>
     <Filter Include="AI\PathFinding">
       <UniqueIdentifier>{72d94fe6-e599-4523-8e54-81df808c96fd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mySourceCode">
+      <UniqueIdentifier>{fb0d2c58-214b-45f8-8095-55771bb6f7c4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
