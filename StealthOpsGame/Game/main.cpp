@@ -11,7 +11,7 @@ K2EngineLow* g_k2EngineLow = nullptr;
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow)
 {
 	// ゲームの初期化。
-	InitGame(hInstance, hPrevInstance, lpCmdLine, nCmdShow, TEXT("Game"));
+	InitGame(hInstance, hPrevInstance, lpCmdLine, nCmdShow, TEXT("ステルスアクションゲーム"));
 	
 	// k2EngineLowの初期化。
 	g_k2EngineLow = new K2EngineLow();
