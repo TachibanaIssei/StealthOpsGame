@@ -1,7 +1,6 @@
 #pragma once
 namespace nsK2EngineLow
 {
-	///シングルトンパターンを使用
 	/// <summary>
 	/// レンダリングエンジン
 	/// </summary>
