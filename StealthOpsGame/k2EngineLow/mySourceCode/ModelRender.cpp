@@ -54,6 +54,7 @@ namespace nsK2EngineLow
 
 	void ModelRender::Draw(RenderContext& rc)
 	{
+		g_renderingEngine->AddRenderObject(this);
 	}
 
 	void ModelRender::UpdateWorldMatrixInModels()

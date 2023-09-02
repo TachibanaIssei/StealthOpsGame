@@ -7,12 +7,20 @@ namespace nsK2EngineLow
 		ModelRender();
 		~ModelRender();
 
+		/// <summary>
+		/// モデルの初期化
+		/// </summary>
+		/// <param name="tkmFilePath">tkmファイルパス</param>
+		/// <param name="animationClips">アニメーションクリップ</param>
+		/// <param name="numAnimationClips">アニメーションクリップの数</param>
+		/// <param name="enModelUpAxis">モデルの上方向</param>
+		/// <param name="isShadowReceiver">trueなら影が落ちる</param>
 		void Init(
 			const char* tkmFilePath,
 			AnimationClip* animationClips = nullptr,
 			const int numAnimationClips = 0,
 			const EnModelUpAxis enModelUpAxis = enModelUpAxisZ,
-			const bool shadow = true
+			const bool isShadowReceiver = true
 		);
 
 		/// <summary>
@@ -27,12 +35,12 @@ namespace nsK2EngineLow
 		void Draw(RenderContext& rc);
 
 		/// <summary>
-		/// モデルを取得する
+		/// フォワードレンダーで描画されるモデルを取得する
 		/// </summary>
 		/// <returns>モデル</returns>
 		Model& GetFowardRenderModel()
 		{
-			return m_fowardRenderModel;
+			return m_forwardRenderModel;
 		}
 
 		/// <summary>
