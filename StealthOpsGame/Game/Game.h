@@ -1,15 +1,9 @@
 #pragma once
+#include "Player.h"
 
 class Game : public IGameObject
 {
 public:
-	enum EnAnimationClips
-	{
-		enAnimationClip_Idle,
-		enAnimationClip_Walk,
-		enAnimationClip_Run,
-		enAnimationClip_Num
-	};
 	Game();
 	~Game();
 
@@ -18,8 +12,8 @@ public:
 	void Render(RenderContext& rc)override final;
 
 private:
-	AnimationClip m_animationClips[enAnimationClip_Num];
-	ModelRender m_unityChan;
+	Player* m_player;
+	SpriteRender m_spriteRender;
 	Vector3 m_position = Vector3::Zero;
 	Vector3 m_scale = Vector3::One;
 	Quaternion m_rotation = Quaternion::Identity;
