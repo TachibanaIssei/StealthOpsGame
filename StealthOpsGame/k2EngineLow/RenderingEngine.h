@@ -42,7 +42,7 @@ namespace nsK2EngineLow
 		void FowardRendering(RenderContext& rc);
 
 	private:
-		RenderTarget				m_mainRenderTarget;
+		RenderTarget				m_mainRenderTarget;			//メインレンダーターゲット
 		Sprite						m_copyToFrameBufferSprite;	//フレームバッファにコピーする画像
 		std::vector<IRenderer*>		m_renderObjects;			//描画オブジェクトのリスト
 	};
