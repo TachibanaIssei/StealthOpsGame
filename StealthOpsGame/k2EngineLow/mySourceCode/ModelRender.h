@@ -24,6 +24,12 @@ namespace nsK2EngineLow
 		);
 
 		/// <summary>
+		/// 特殊なシェーディングを行いたい場合の初期化
+		/// </summary>
+		/// <param name="initData">モデルデータ</param>
+		void InitForwardRendering(ModelInitData& initData);
+
+		/// <summary>
 		/// 更新処理
 		/// </summary>
 		void Update();

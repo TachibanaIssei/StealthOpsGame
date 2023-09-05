@@ -37,6 +37,14 @@ namespace nsK2EngineLow
 		m_forwardRenderModel.Init(modelInitData);
 	}
 
+	void ModelRender::InitForwardRendering(ModelInitData& initData)
+	{
+		InitSkeleton(initData.m_tkmFilePath);
+		initData.m_colorBufferFormat[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		m_forwardRenderModel.Init(initData);
+		UpdateWorldMatrixInModels();
+	}
+
 	void ModelRender::Update()
 	{
 		UpdateWorldMatrixInModels();
