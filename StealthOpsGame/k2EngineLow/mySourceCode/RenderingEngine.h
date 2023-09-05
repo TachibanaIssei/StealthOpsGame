@@ -28,22 +28,39 @@ namespace nsK2EngineLow
 		/// </summary>
 		void Init();
 		/// <summary>
-		/// レンダーターゲットの初期化
+		/// メインレンダーターゲットの初期化
 		/// </summary>
-		void InitRenderTargets();
+		void InitMainRenderTarget();
 		/// <summary>
-		/// 画像の初期化
+		/// 2D描画用のレンダーターゲットの初期化
 		/// </summary>
-		void InitSprites();
+		void Init2DRenderTarget();
+		/// <summary>
+		/// メインレンダリングターゲットのカラーバッファの内容をフレームバッファにコピーするスプライトを初期化する
+		/// </summary>
+		void InitCopyMainRenderTargetToFrameBufferSprite();
 		/// <summary>
 		/// フォワードレンダーモデルの描画
 		/// </summary>
 		/// <param name="rc"></param>
 		void FowardRendering(RenderContext& rc);
+		/// <summary>
+		/// 2D描画
+		/// </summary>
+		/// <param name="rc"></param>
+		void Render2D(RenderContext& rc);
+		/// <summary>
+		/// メインレンダーターゲットの内容をフレームバッファにコピー
+		/// </summary>
+		/// <param name="rc"></param>
+		void CopyMainRenderTargetToFrameBuffer(RenderContext& rc);
 
 	private:
 		RenderTarget				m_mainRenderTarget;			//メインレンダーターゲット
+		RenderTarget				m_2DRenderTarget;			//2D描画用のレンダーターゲット
 		Sprite						m_copyToFrameBufferSprite;	//フレームバッファにコピーする画像
+		Sprite						m_2DSprite;					//2D描画用のスプライト
+		Sprite						m_mainSprite;
 		std::vector<IRenderer*>		m_renderObjects;			//描画オブジェクトのリスト
 	};
 }

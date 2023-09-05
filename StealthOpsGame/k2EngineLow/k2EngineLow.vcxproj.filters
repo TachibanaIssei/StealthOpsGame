@@ -231,7 +231,10 @@
     <ClCompile Include="mySourceCode\IRenderer.cpp">
       <Filter>mySourceCode</Filter>
     </ClCompile>
-    <ClCompile Include="RenderingEngine.cpp">
+    <ClCompile Include="mySourceCode\RenderingEngine.cpp">
+      <Filter>mySourceCode</Filter>
+    </ClCompile>
+    <ClCompile Include="mySourceCode\SpriteRender.cpp">
       <Filter>mySourceCode</Filter>
     </ClCompile>
   </ItemGroup>
@@ -517,7 +520,10 @@
     <ClInclude Include="util\Noncopyable.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="RenderingEngine.h">
+    <ClInclude Include="mySourceCode\RenderingEngine.h">
+      <Filter>mySourceCode</Filter>
+    </ClInclude>
+    <ClInclude Include="mySourceCode\SpriteRender.h">
       <Filter>mySourceCode</Filter>
     </ClInclude>
   </ItemGroup>
