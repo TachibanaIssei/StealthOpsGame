@@ -1,8 +1,8 @@
-#pragma once
+ï»¿#pragma once
 namespace nsK2EngineLow
 {
 	/// <summary>
-	/// ƒŒƒ“ƒ_ƒŠƒ“ƒOƒGƒ“ƒWƒ“
+	/// ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¨ãƒ³ã‚¸ãƒ³
 	/// </summary>
 	class RenderingEngine : public Noncopyable
 	{
@@ -10,7 +10,7 @@ namespace nsK2EngineLow
 		RenderingEngine();
 		~RenderingEngine();
 		/// <summary>
-		/// •`‰æƒIƒuƒWƒFƒNƒg‚ğ’Ç‰ÁB
+		/// æç”»ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’è¿½åŠ ã€‚
 		/// </summary>
 		/// <param name="renderObject"></param>
 		void AddRenderObject(IRenderer* renderObject)
@@ -18,49 +18,49 @@ namespace nsK2EngineLow
 			m_renderObjects.push_back(renderObject);
 		}
 		/// <summary>
-		/// •`‰æˆ—‚ğÀs‚·‚é
+		/// æç”»å‡¦ç†ã‚’å®Ÿè¡Œã™ã‚‹
 		/// </summary>
 		void Execute(RenderContext& rc);
 
 	private:
 		/// <summary>
-		/// ‰Šú‰»ˆ—
+		/// åˆæœŸåŒ–å‡¦ç†
 		/// </summary>
 		void Init();
 		/// <summary>
-		/// ƒƒCƒ“ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚Ì‰Šú‰»
+		/// ãƒ¡ã‚¤ãƒ³ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®åˆæœŸåŒ–
 		/// </summary>
 		void InitMainRenderTarget();
 		/// <summary>
-		/// 2D•`‰æ—p‚ÌƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚Ì‰Šú‰»
+		/// 2Dæç”»ç”¨ã®ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®åˆæœŸåŒ–
 		/// </summary>
 		void Init2DRenderTarget();
 		/// <summary>
-		/// ƒƒCƒ“ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ÌƒJƒ‰[ƒoƒbƒtƒ@‚Ì“à—e‚ğƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚ÉƒRƒs[‚·‚éƒXƒvƒ‰ƒCƒg‚ğ‰Šú‰»‚·‚é
+		/// ãƒ¡ã‚¤ãƒ³ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ã‚«ãƒ©ãƒ¼ãƒãƒƒãƒ•ã‚¡ã®å†…å®¹ã‚’ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã«ã‚³ãƒ”ãƒ¼ã™ã‚‹ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã‚’åˆæœŸåŒ–ã™ã‚‹
 		/// </summary>
 		void InitCopyMainRenderTargetToFrameBufferSprite();
 		/// <summary>
-		/// ƒtƒHƒ[ƒhƒŒƒ“ƒ_[ƒ‚ƒfƒ‹‚Ì•`‰æ
+		/// ãƒ•ã‚©ãƒ¯ãƒ¼ãƒ‰ãƒ¬ãƒ³ãƒ€ãƒ¼ãƒ¢ãƒ‡ãƒ«ã®æç”»
 		/// </summary>
 		/// <param name="rc"></param>
 		void FowardRendering(RenderContext& rc);
 		/// <summary>
-		/// 2D•`‰æ
+		/// 2Dæç”»
 		/// </summary>
 		/// <param name="rc"></param>
 		void Render2D(RenderContext& rc);
 		/// <summary>
-		/// ƒƒCƒ“ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚Ì“à—e‚ğƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚ÉƒRƒs[
+		/// ãƒ¡ã‚¤ãƒ³ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®å†…å®¹ã‚’ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã«ã‚³ãƒ”ãƒ¼
 		/// </summary>
 		/// <param name="rc"></param>
 		void CopyMainRenderTargetToFrameBuffer(RenderContext& rc);
 
 	private:
-		RenderTarget				m_mainRenderTarget;			//ƒƒCƒ“ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg
-		RenderTarget				m_2DRenderTarget;			//2D•`‰æ—p‚ÌƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg
-		Sprite						m_copyToFrameBufferSprite;	//ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚ÉƒRƒs[‚·‚é‰æ‘œ
-		Sprite						m_2DSprite;					//2D•`‰æ—p‚ÌƒXƒvƒ‰ƒCƒg
+		RenderTarget				m_mainRenderTarget;			//ãƒ¡ã‚¤ãƒ³ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆ
+		RenderTarget				m_2DRenderTarget;			//2Dæç”»ç”¨ã®ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆ
+		Sprite						m_copyToFrameBufferSprite;	//ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã«ã‚³ãƒ”ãƒ¼ã™ã‚‹ç”»åƒ
+		Sprite						m_2DSprite;					//2Dæç”»ç”¨ã®ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆ
 		Sprite						m_mainSprite;
-		std::vector<IRenderer*>		m_renderObjects;			//•`‰æƒIƒuƒWƒFƒNƒg‚ÌƒŠƒXƒg
+		std::vector<IRenderer*>		m_renderObjects;			//æç”»ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒªã‚¹ãƒˆ
 	};
 }
