@@ -1,79 +1,79 @@
-ï»¿//ãƒ¢ãƒ‡ãƒ«ã®é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼é–¢ä¿‚ã®å…±é€šãƒ˜ãƒƒãƒ€ãƒ¼
+//ƒ‚ƒfƒ‹‚Ì’¸“_ƒVƒF[ƒ_[ŠÖŒW‚Ì‹¤’Êƒwƒbƒ_[
 
 ///////////////////////////////////////
-// å®šæ•°ãƒãƒƒãƒ•ã‚¡ã€‚
+// ’è”ƒoƒbƒtƒ@B
 ///////////////////////////////////////
-// ãƒ¢ãƒ‡ãƒ«ç”¨ã®å®šæ•°ãƒãƒƒãƒ•ã‚¡ãƒ¼
+// ƒ‚ƒfƒ‹—p‚Ì’è”ƒoƒbƒtƒ@[
 cbuffer ModelCb : register(b0)
 {
-    float4x4 mWorld;
-    float4x4 mView;
-    float4x4 mProj;
+	float4x4 mWorld;
+	float4x4 mView;
+	float4x4 mProj;
 };
 
 ////////////////////////////////////////////////
-// æ§‹é€ ä½“
+// \‘¢‘Ì
 ////////////////////////////////////////////////
 
-// é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã¸ã®å…¥åŠ›
+// ’¸“_ƒVƒF[ƒ_[‚Ö‚Ì“ü—Í
 struct SVSIn
 {
-    float4 pos : POSITION;          //é ‚ç‚¹åº§æ¨™ã€‚
-    float3 normal : NORMAL;         //æ³•ç·šã€‚
-    float2 uv : TEXCOORD0;          //UVåº§æ¨™ã€‚
-    float3 tangent  : TANGENT;      //æ¥ãƒ™ã‚¯ãƒˆãƒ«ã€‚
-    float3 biNormal : BINORMAL;     //å¾“ãƒ™ã‚¯ãƒˆãƒ«ã€‚
-    int4  Indices  	: BLENDINDICES0;
-    float4 Weights  : BLENDWEIGHT0;
+	float4 pos : POSITION;          //’¸“_À•WB
+	float3 normal : NORMAL;         //–@üB
+	float2 uv : TEXCOORD0;          //UVÀ•WB
+	float3 tangent  : TANGENT;      //ÚƒxƒNƒgƒ‹B
+	float3 biNormal : BINORMAL;     //]ƒxƒNƒgƒ‹B
+	int4  Indices  	: BLENDINDICES0;
+	float4 Weights  : BLENDWEIGHT0;
 };
 
 ////////////////////////////////////////////////
-// ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã€‚
+// ƒOƒ[ƒoƒ‹•Ï”B
 ////////////////////////////////////////////////
-StructuredBuffer<float4x4> g_boneMatrix         : register(t3);	    //ãƒœãƒ¼ãƒ³è¡Œåˆ—ã€‚
+StructuredBuffer<float4x4> g_boneMatrix         : register(t3);	    //ƒ{[ƒ“s—ñB
 
 ///////////////////////////////////////
-// é–¢æ•°å®£è¨€
+// ŠÖ”éŒ¾
 ///////////////////////////////////////
 SPSIn VSMainCore(SVSIn vsIn, float4x4 mWorldLocal);
 
 ////////////////////////////////////////////////
-// é–¢æ•°å®šç¾©ã€‚
+// ŠÖ”’è‹`B
 ////////////////////////////////////////////////
 /// <summary>
-//ã‚¹ã‚­ãƒ³è¡Œåˆ—ã‚’è¨ˆç®—ã™ã‚‹ã€‚
+//ƒXƒLƒ“s—ñ‚ğŒvZ‚·‚éB
 /// </summary>
 float4x4 CalcSkinMatrix(SVSIn skinVert)
 {
 	float4x4 skinning = 0;	
 	float w = 0.0f;
 	[unroll]
-    for (int i = 0; i < 3; i++)
-    {
-        skinning += g_boneMatrix[skinVert.Indices[i]] * skinVert.Weights[i];
-        w += skinVert.Weights[i];
-    }
-    
-    skinning += g_boneMatrix[skinVert.Indices[3]] * (1.0f - w);
+	for (int i = 0; i < 3; i++)
+	{
+		skinning += g_boneMatrix[skinVert.Indices[i]] * skinVert.Weights[i];
+		w += skinVert.Weights[i];
+	}
 	
-    return skinning;
+	skinning += g_boneMatrix[skinVert.Indices[3]] * (1.0f - w);
+	
+	return skinning;
 }
 
 /// <summary>
-/// ãƒ¯ãƒ¼ãƒ«ãƒ‰ç©ºé–“ã®é ‚ç‚¹åº§æ¨™ã‚’è¨ˆç®—ã™ã‚‹ã€‚
+/// ƒ[ƒ‹ƒh‹óŠÔ‚Ì’¸“_À•W‚ğŒvZ‚·‚éB
 /// </summary>
-/// <param name="vertexPos">é ‚ç‚¹åº§æ¨™</param>
-/// <param name="mWorld">ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—</param>
+/// <param name="vertexPos">’¸“_À•W</param>
+/// <param name="mWorld">ƒ[ƒ‹ƒhs—ñ</param>
 float4 CalcVertexPositionInWorldSpace(float4 vertexPos, float4x4 mWorld)
 {
-    float4 pos;
-    pos = mul(mWorld, vertexPos);  // ãƒ¢ãƒ‡ãƒ«ã®é ‚ç‚¹ã‚’ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ç³»ã«å¤‰æ›
+	float4 pos;
+	pos = mul(mWorld, vertexPos);  // ƒ‚ƒfƒ‹‚Ì’¸“_‚ğƒ[ƒ‹ƒhÀ•WŒn‚É•ÏŠ·
 
-    return pos;
+	return pos;
 }
 
 /// <summary>
-/// ã‚¹ã‚­ãƒ³ãªã—ãƒ¡ãƒƒã‚·ãƒ¥ç”¨ã®é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ã‚¨ãƒ³ãƒˆãƒªãƒ¼é–¢æ•°ã€‚
+/// ƒXƒLƒ“‚È‚µƒƒbƒVƒ…—p‚Ì’¸“_ƒVƒF[ƒ_[‚ÌƒGƒ“ƒgƒŠ[ŠÖ”B
 /// </summary>
 SPSIn VSMain(SVSIn vsIn)
 {
@@ -81,7 +81,7 @@ SPSIn VSMain(SVSIn vsIn)
 }
 
 /// <summary>
-/// ã‚¹ã‚­ãƒ³ã‚ã‚Šãƒ¡ãƒƒã‚·ãƒ¥ã®é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®ã‚¨ãƒ³ãƒˆãƒªãƒ¼é–¢æ•°ã€‚
+/// ƒXƒLƒ“‚ ‚èƒƒbƒVƒ…‚Ì’¸“_ƒVƒF[ƒ_[‚ÌƒGƒ“ƒgƒŠ[ŠÖ”B
 /// </summary>
 SPSIn VSMainSkin( SVSIn vsIn ) 
 {
@@ -89,26 +89,26 @@ SPSIn VSMainSkin( SVSIn vsIn )
 }
 
 /// <summary>
-/// ãƒ¯ãƒ¼ãƒ«ãƒ‰ã‚¹ãƒšãƒ¼ã‚¹ã®æ³•ç·šã€æ¥ãƒ™ã‚¯ãƒˆãƒ«ã€å¾“ãƒ™ã‚¯ãƒˆãƒ«ã‚’è¨ˆç®—ã™ã‚‹ã€‚
+/// ƒ[ƒ‹ƒhƒXƒy[ƒX‚Ì–@üAÚƒxƒNƒgƒ‹A]ƒxƒNƒgƒ‹‚ğŒvZ‚·‚éB
 /// </summary>
-/// <param name="oNormal">æ³•ç·šã®å‡ºåŠ›å…ˆ</param>
-/// <param name="oTangent">æ¥ãƒ™ã‚¯ãƒˆãƒ«ã®å‡ºåŠ›å…ˆ</param>
-/// <param name="oBiNormal">å¾“ãƒ™ã‚¯ãƒˆãƒ«ã®å‡ºåŠ›å…ˆ</param>
-/// <param name="mWorld">ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—</param>
-/// <param name="iNormal">æ³•ç·š</param>
-/// <param name="iTanget">æ¥ãƒ™ã‚¯ãƒˆãƒ«</param>
-/// <param name="iBiNormal">å¾“ãƒ™ã‚¯ãƒˆãƒ«</param>
+/// <param name="oNormal">–@ü‚Ìo—Íæ</param>
+/// <param name="oTangent">ÚƒxƒNƒgƒ‹‚Ìo—Íæ</param>
+/// <param name="oBiNormal">]ƒxƒNƒgƒ‹‚Ìo—Íæ</param>
+/// <param name="mWorld">ƒ[ƒ‹ƒhs—ñ</param>
+/// <param name="iNormal">–@ü</param>
+/// <param name="iTanget">ÚƒxƒNƒgƒ‹</param>
+/// <param name="iBiNormal">]ƒxƒNƒgƒ‹</param>
 void CalcVertexNormalTangentBiNormalInWorldSpace( 
-    out float3 oNormal, 
-    out float3 oTangent, 
-    out float3 oBiNormal,
-    float4x4 mWorld,
-    float3 iNormal,
-    float3 iTangent,
-    float3 iBiNormal
+	out float3 oNormal, 
+	out float3 oTangent, 
+	out float3 oBiNormal,
+	float4x4 mWorld,
+	float3 iNormal,
+	float3 iTangent,
+	float3 iBiNormal
 )
 {
-    float3x3 m3x3 = (float3x3)mWorld;
+	float3x3 m3x3 = (float3x3)mWorld;
 	oNormal = normalize(mul(m3x3, iNormal));
 	oTangent = normalize(mul(m3x3, iTangent));
 	oBiNormal = normalize(mul(m3x3, iBiNormal));
