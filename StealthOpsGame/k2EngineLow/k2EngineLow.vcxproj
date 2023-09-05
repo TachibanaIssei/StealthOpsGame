@@ -325,6 +325,7 @@
     <ClCompile Include="physics\RigidBody.cpp" />
     <ClCompile Include="physics\SphereCollider.cpp" />
     <ClCompile Include="mySourceCode\RenderingEngine.cpp" />
+    <ClCompile Include="mySourceCode\SkyCube.cpp" />
     <ClCompile Include="sound\SoundEngine.cpp" />
     <ClCompile Include="sound\SoundSource.cpp" />
     <ClCompile Include="sound\WaveFile.cpp" />
@@ -419,6 +420,7 @@
     <ClInclude Include="physics\RigidBody.h" />
     <ClInclude Include="physics\SphereCollider.h" />
     <ClInclude Include="mySourceCode\RenderingEngine.h" />
+    <ClInclude Include="mySourceCode\SkyCube.h" />
     <ClInclude Include="sound\SoundEngine.h" />
     <ClInclude Include="sound\SoundSource.h" />
     <ClInclude Include="sound\WaveFile.h" />

@@ -18,6 +18,9 @@ bool Game::Start()
 	m_rotation.SetRotationDegZ(90.0f);
 	m_spriteRender.SetRotation(m_rotation);
 	m_spriteRender.Update();
+
+	InitSkyCube();
+
 	return true;
 }
 
@@ -37,4 +40,11 @@ void Game::Update()
 void Game::Render(RenderContext& rc)
 {
 	m_spriteRender.Draw(rc);
+}
+
+void Game::InitSkyCube()
+{
+	m_skyCube = NewGO<SkyCube>(0, "skyCube");
+	m_skyCube->SetScale(600.0f);
+	m_skyCube->SetLuminance(1.0f);
 }

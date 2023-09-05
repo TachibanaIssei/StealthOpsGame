@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Player.h"
+#include "../k2EngineLow/mySourceCode/SkyCube.h"
 
 class Game : public IGameObject
 {
@@ -12,10 +13,15 @@ public:
 	void Render(RenderContext& rc)override final;
 
 private:
-	Player* m_player;
+	void InitSkyCube();
+
+private:
+	Player* m_player = nullptr;
 	SpriteRender m_spriteRender;
 	Vector3 m_position = Vector3::Zero;
 	Vector3 m_scale = Vector3::One;
 	Quaternion m_rotation = Quaternion::Identity;
+
+	SkyCube* m_skyCube;
 };
 
