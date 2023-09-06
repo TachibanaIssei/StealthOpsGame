@@ -19,6 +19,8 @@ bool Game::Start()
 	m_spriteRender.SetRotation(m_rotation);
 	m_spriteRender.Update();
 
+	InitFontRender();
+
 	InitSkyCube();
 
 	return true;
@@ -40,6 +42,7 @@ void Game::Update()
 void Game::Render(RenderContext& rc)
 {
 	m_spriteRender.Draw(rc);
+	m_fontRender.Draw(rc);
 }
 
 void Game::InitSkyCube()
@@ -47,4 +50,14 @@ void Game::InitSkyCube()
 	m_skyCube = NewGO<SkyCube>(0, "skyCube");
 	m_skyCube->SetScale(400.0f);
 	m_skyCube->SetLuminance(1.0f);
+}
+
+void Game::InitFontRender()
+{
+	wchar_t text[256];
+	swprintf_s(text, L"テキスト見えるよ");
+	m_fontRender.SetText(text);
+	m_fontRender.SetColor(1.0f, 0.0f, 0.0f, 1.0f);
+	m_fontRender.SetShadowParam(true, 2.0f, { 1.0f,1.0f,0.0f,1.0f });
+	m_fontRender.SetPosition({ 0.0f,500.0f,0.0f });
 }
