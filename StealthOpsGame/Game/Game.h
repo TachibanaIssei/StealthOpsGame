@@ -14,6 +14,7 @@ public:
 
 private:
 	void InitSkyCube();
+	void InitFontRender();
 
 private:
 	Player* m_player = nullptr;
@@ -21,6 +22,8 @@ private:
 	Vector3 m_position = Vector3::Zero;
 	Vector3 m_scale = Vector3::One;
 	Quaternion m_rotation = Quaternion::Identity;
+
+	FontRender m_fontRender;
 
 	SkyCube* m_skyCube;
 };

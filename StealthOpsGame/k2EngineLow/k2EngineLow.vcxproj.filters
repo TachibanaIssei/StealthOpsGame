@@ -238,6 +238,7 @@
       <Filter>mySourceCode</Filter>
     </ClCompile>
     <ClCompile Include="mySourceCode\SkyCube.cpp" />
+    <ClCompile Include="mySourceCode\FontRender.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="k2EngineLowPreCompile.h" />
@@ -528,6 +529,7 @@
       <Filter>mySourceCode</Filter>
     </ClInclude>
     <ClInclude Include="mySourceCode\SkyCube.h" />
+    <ClInclude Include="mySourceCode\FontRender.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="graphics">

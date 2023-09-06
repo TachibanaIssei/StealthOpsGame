@@ -72,8 +72,8 @@ namespace nsK2EngineLow {
 		float time = g_gameTime->GetFrameDeltaTime();
 		wchar_t text[256];
 		swprintf(text, L"FPS = %0.2f", 1.0f / time);
-		m_fpsFontShadow->Draw(text, { UI_SPACE_WIDTH * -0.48f + 3.0f , UI_SPACE_HEIGHT * 0.48f - 3.0f }, { 0.0f, 0.0f, 0.0f, 1.0f }, 0.0f, 1.0f, { 0.0f, 1.0f });
-		m_fpsFont->Draw(text, { UI_SPACE_WIDTH * -0.48f, UI_SPACE_HEIGHT * 0.48f }, { 1.0f, 1.0f, 1.0f, 1.0f }, 0.0f, 1.0f, { 0.0f, 1.0f });
+		m_fpsFontShadow->Draw(text, { UI_SPACE_WIDTH * -0.49f + 2.4f , UI_SPACE_HEIGHT * 0.49f - 2.4f }, { 0.3f, 0.3f, 1.0f, 1.0f }, 0.0f, 0.8f, { 0.0f, 1.0f });
+		m_fpsFont->Draw(text, { UI_SPACE_WIDTH * -0.49f, UI_SPACE_HEIGHT * 0.49f }, { 0.0f, 1.0f, 1.0f, 1.0f }, 0.0f, 0.8f, { 0.0f, 1.0f });
 		m_fpsFont->End(g_graphicsEngine->GetRenderContext());
 #endif 
 		m_graphicsEngine->EndRender();
