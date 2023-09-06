@@ -1,4 +1,4 @@
-#include "k2EngineLowPreCompile.h"
+ï»¿#include "k2EngineLowPreCompile.h"
 #include "ModelRender.h"
 
 namespace nsK2EngineLow
@@ -14,41 +14,49 @@ namespace nsK2EngineLow
 	{
 		ModelInitData modelInitData;
 
-		//tkmƒtƒ@ƒCƒ‹ƒpƒX‚ğİ’è
+		//tkmãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’è¨­å®š
 		modelInitData.m_tkmFilePath = tkmFilePath;
-		//ƒVƒF[ƒ_[ƒtƒ@ƒCƒ‹ƒpƒX‚ğİ’è
+		//ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹ã‚’è¨­å®š
 		modelInitData.m_fxFilePath = "Assets/shader/model.fx";
-		//ƒ‚ƒfƒ‹‚Ìã•ûŒü‚ğİ’è
+		//ãƒ¢ãƒ‡ãƒ«ã®ä¸Šæ–¹å‘ã‚’è¨­å®š
 		modelInitData.m_modelUpAxis = enModelUpAxis;
 
-		// ƒXƒPƒ‹ƒgƒ“‚ğ‰Šú‰»B
+		// ã‚¹ã‚±ãƒ«ãƒˆãƒ³ã‚’åˆæœŸåŒ–ã€‚
 		InitSkeleton(tkmFilePath);
-		// ƒAƒjƒ[ƒVƒ‡ƒ“‚ğ‰Šú‰»B
+		// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’åˆæœŸåŒ–ã€‚
 		InitAnimation(animationClips, numAnimationClips, enModelUpAxis);
 
-		//ƒAƒjƒ[ƒVƒ‡ƒ“‚ªİ’è‚³‚ê‚Ä‚¢‚½‚çB
+		//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ãŒè¨­å®šã•ã‚Œã¦ã„ãŸã‚‰ã€‚
 		if (m_animationClips != nullptr)
 		{
-			//ƒXƒPƒ‹ƒgƒ“‚ğw’è‚·‚é
+			//ã‚¹ã‚±ãƒ«ãƒˆãƒ³ã‚’æŒ‡å®šã™ã‚‹
 			modelInitData.m_skeleton = &m_skeleton;
-			//ƒXƒLƒ“‚ª‚ ‚é—p‚Ì’¸“_ƒVƒF[ƒ_[‚ğİ’è‚·‚éB
+			//ã‚¹ã‚­ãƒ³ãŒã‚ã‚‹ç”¨ã®é ‚ç‚¹ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã‚’è¨­å®šã™ã‚‹ã€‚
 			modelInitData.m_vsSkinEntryPointFunc = "VSSkinMain";
 		}
 		m_forwardRenderModel.Init(modelInitData);
+	}
+
+	void ModelRender::InitForwardRendering(ModelInitData& initData)
+	{
+		InitSkeleton(initData.m_tkmFilePath);
+		initData.m_colorBufferFormat[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		m_forwardRenderModel.Init(initData);
+		UpdateWorldMatrixInModels();
 	}
 
 	void ModelRender::Update()
 	{
 		UpdateWorldMatrixInModels();
 
-		//ƒXƒPƒ‹ƒgƒ“‚ª‰Šú‰»‚³‚ê‚Ä‚¢‚½‚ç
+		//ã‚¹ã‚±ãƒ«ãƒˆãƒ³ãŒåˆæœŸåŒ–ã•ã‚Œã¦ã„ãŸã‚‰
 		if (m_skeleton.IsInited())
 		{
-			//ƒXƒPƒ‹ƒgƒ“‚ğXV‚·‚é
+			//ã‚¹ã‚±ãƒ«ãƒˆãƒ³ã‚’æ›´æ–°ã™ã‚‹
 			m_skeleton.Update(m_forwardRenderModel.GetWorldMatrix());
 		}
 
-		//ƒAƒjƒ[ƒVƒ‡ƒ“‚ği‚ß‚é
+		//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’é€²ã‚ã‚‹
 		m_animation.Progress(g_gameTime->GetFrameDeltaTime() * m_animationSpeed);
 	}
 
@@ -67,7 +75,7 @@ namespace nsK2EngineLow
 
 	void ModelRender::InitSkeleton(const char* filePath)
 	{
-		//ƒXƒPƒ‹ƒgƒ“‚Ìƒf[ƒ^‚ğ“Ç‚İ‚İB
+		//ã‚¹ã‚±ãƒ«ãƒˆãƒ³ã®ãƒ‡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã¿ã€‚
 		std::string skeletonFilePath = filePath;
 		int pos = (int)skeletonFilePath.find(".tkm");
 		skeletonFilePath.replace(pos, 4, ".tks");
@@ -81,7 +89,7 @@ namespace nsK2EngineLow
 
 		if (m_animationClips != nullptr)
 		{
-			//ƒAƒjƒ[ƒVƒ‡ƒ“‚Ì‰Šú‰»
+			//ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®åˆæœŸåŒ–
 			m_animation.Init(
 				m_skeleton,
 				m_animationClips,

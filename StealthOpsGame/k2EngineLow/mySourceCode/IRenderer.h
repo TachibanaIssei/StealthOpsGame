@@ -1,13 +1,13 @@
-#pragma once
+ï»¿#pragma once
 namespace nsK2EngineLow {
 	/// <summary>
-	/// ƒŒƒ“ƒ_[ƒ‰[‚ÌŠî’êƒNƒ‰ƒX
+	/// ãƒ¬ãƒ³ãƒ€ãƒ¼ãƒ©ãƒ¼ã®åŸºåº•ã‚¯ãƒ©ã‚¹
 	/// </summary>
 	class IRenderer : public Noncopyable
 	{
 	public:
 		/// <summary>
-		/// ƒtƒHƒ[ƒhƒŒƒ“ƒ_[ƒpƒX‚©‚çŒÄ‚Î‚ê‚éˆ—
+		/// ãƒ•ã‚©ãƒ¯ãƒ¼ãƒ‰ãƒ¬ãƒ³ãƒ€ãƒ¼ãƒ‘ã‚¹ã‹ã‚‰å‘¼ã°ã‚Œã‚‹å‡¦ç†
 		/// </summary>
 		/// <param name="rc"></param>
 		virtual void  OnForwardRender(RenderContext& rc)
@@ -15,7 +15,7 @@ namespace nsK2EngineLow {
 
 		}
 		/// <summary>
-		/// 2DƒIƒuƒWƒFƒNƒg‚©‚çŒÄ‚Î‚ê‚éˆ—
+		/// 2Dã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‹ã‚‰å‘¼ã°ã‚Œã‚‹å‡¦ç†
 		/// </summary>
 		/// <param name="rc"></param>
 		virtual void OnRender2D(RenderContext& rc)

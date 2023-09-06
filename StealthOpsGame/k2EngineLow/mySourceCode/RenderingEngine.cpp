@@ -1,4 +1,4 @@
-#include "k2EngineLowPreCompile.h"
+ï»¿#include "k2EngineLowPreCompile.h"
 #include "RenderingEngine.h"
 
 namespace nsK2EngineLow
@@ -18,7 +18,7 @@ namespace nsK2EngineLow
 	}
 	void RenderingEngine::Execute(RenderContext& rc)
 	{
-		//ƒ‚ƒfƒ‹‚ğ•`‰æ
+		//ãƒ¢ãƒ‡ãƒ«ã‚’æç”»
 		FowardRendering(rc);
 		Render2D(rc);
 		CopyMainRenderTargetToFrameBuffer(rc);
@@ -27,7 +27,7 @@ namespace nsK2EngineLow
 	}
 	void RenderingEngine::InitMainRenderTarget()
 	{
-		//ƒƒCƒ“ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg
+		//ãƒ¡ã‚¤ãƒ³ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆ
 		m_mainRenderTarget.Create(
 			g_graphicsEngine->GetFrameBufferWidth(),
 			g_graphicsEngine->GetFrameBufferHeight(),
@@ -51,42 +51,42 @@ namespace nsK2EngineLow
 			clearColor
 		);
 
-		//m_2DSprite‚Ì‰Šú‰»
+		//m_2DSpriteã®åˆæœŸåŒ–
 		SpriteInitData spriteInitData;
-		//ƒeƒNƒXƒ`ƒƒ‚Í2DƒŒƒ“ƒ_\ƒ^[ƒQƒbƒg
+		//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã¯2Dãƒ¬ãƒ³ãƒ€â€•ã‚¿ãƒ¼ã‚²ãƒƒãƒˆ
 		spriteInitData.m_textures[0] = &m_2DRenderTarget.GetRenderTargetTexture();
-		// ‰ğ‘œ“x‚ÍmainRenderTarget‚Ì•‚Æ‚‚³
+		// è§£åƒåº¦ã¯mainRenderTargetã®å¹…ã¨é«˜ã•
 		spriteInitData.m_width = m_mainRenderTarget.GetWidth();
 		spriteInitData.m_height = m_mainRenderTarget.GetHeight();
 		spriteInitData.m_fxFilePath = "Assets/shader/sprite.fx";
 		spriteInitData.m_vsEntryPointFunc = "VSMain";
 		spriteInitData.m_psEntryPoinFunc = "PSMain";
 		spriteInitData.m_alphaBlendMode = AlphaBlendMode_None;
-		//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ÌƒtƒH[ƒ}ƒbƒg
+		//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 		spriteInitData.m_colorBufferFormat[0] = m_mainRenderTarget.GetColorBufferFormat();
 		m_2DSprite.Init(spriteInitData);
 
-		//m_mainSprite‚Ì‰Šú‰»
-		//ƒeƒNƒXƒ`ƒƒ‚ÍƒƒCƒ“ƒŒƒ“ƒ_\ƒ^[ƒQƒbƒg
+		//m_mainSpriteã®åˆæœŸåŒ–
+		//ãƒ†ã‚¯ã‚¹ãƒãƒ£ã¯ãƒ¡ã‚¤ãƒ³ãƒ¬ãƒ³ãƒ€â€•ã‚¿ãƒ¼ã‚²ãƒƒãƒˆ
 		spriteInitData.m_textures[0] = &m_mainRenderTarget.GetRenderTargetTexture();
-		//‰ğ‘œ“x‚Í2DƒŒƒ“ƒ_\ƒ^[ƒQƒbƒg‚Ì•‚Æ‚‚³
+		//è§£åƒåº¦ã¯2Dãƒ¬ãƒ³ãƒ€â€•ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®å¹…ã¨é«˜ã•
 		spriteInitData.m_width = m_2DRenderTarget.GetWidth();
 		spriteInitData.m_height = m_2DRenderTarget.GetHeight();
-		//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ÌƒtƒH[ƒ}ƒbƒg
+		//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
 		spriteInitData.m_colorBufferFormat[0] = m_2DRenderTarget.GetColorBufferFormat();
 		m_mainSprite.Init(spriteInitData);
 	}
 	void RenderingEngine::InitCopyMainRenderTargetToFrameBufferSprite()
 	{
 		SpriteInitData spriteInitData;
-		//ƒƒCƒ“ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚ÌƒeƒNƒXƒ`ƒƒ
+		//ãƒ¡ã‚¤ãƒ³ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ãƒ†ã‚¯ã‚¹ãƒãƒ£
 		spriteInitData.m_textures[0] = &m_mainRenderTarget.GetRenderTargetTexture();
-		//ƒtƒŒ[ƒ€ƒoƒbƒtƒ@‚Ì‰ğ‘œ“x‚Æ“¯‚¶
+		//ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã®è§£åƒåº¦ã¨åŒã˜
 		spriteInitData.m_width = g_graphicsEngine->GetFrameBufferWidth();
 		spriteInitData.m_height = g_graphicsEngine->GetFrameBufferHeight();
 		spriteInitData.m_fxFilePath = "Assets/shader/sprite.fx";
 
-		//‰Šú‰»ƒIƒuƒWƒFƒNƒg‚ğg‚Á‚ÄAƒXƒvƒ‰ƒCƒg‚ğ‰Šú‰»‚·‚é
+		//åˆæœŸåŒ–ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ä½¿ã£ã¦ã€ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã‚’åˆæœŸåŒ–ã™ã‚‹
 		m_copyToFrameBufferSprite.Init(spriteInitData);
 	}
 	void RenderingEngine::FowardRendering(RenderContext& rc)
@@ -101,7 +101,7 @@ namespace nsK2EngineLow
 			renderObj->OnForwardRender(rc);
 		}
 
-		//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚Ö‚Ì‘‚«‚İI—¹‘Ò‚¿
+		//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¸ã®æ›¸ãè¾¼ã¿çµ‚äº†å¾…ã¡
 		rc.WaitUntilFinishDrawingToRenderTarget(m_mainRenderTarget);
 
 		EndGPUEvent();
@@ -114,7 +114,7 @@ namespace nsK2EngineLow
 		rc.SetRenderTargetAndViewport(m_2DRenderTarget);
 		rc.ClearRenderTargetView(m_2DRenderTarget);
 
-		//ƒƒCƒ“ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚ÌƒJƒ‰[ƒoƒbƒtƒ@‚ğ•`‰æ‚·‚é
+		//ãƒ¡ã‚¤ãƒ³ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ã‚«ãƒ©ãƒ¼ãƒãƒƒãƒ•ã‚¡ã‚’æç”»ã™ã‚‹
 		m_mainSprite.Draw(rc);
 
 		for (auto& renderObj : m_renderObjects) {
@@ -123,11 +123,11 @@ namespace nsK2EngineLow
 
 		rc.WaitUntilFinishDrawingToRenderTarget(m_2DRenderTarget);
 
-		//ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚ğƒƒCƒ“ƒŒƒ“ƒ_ƒŠƒ“ƒOƒ^[ƒQƒbƒg‚Ö•ÏX‚·‚é
+		//ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã‚’ãƒ¡ã‚¤ãƒ³ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã¸å¤‰æ›´ã™ã‚‹
 		rc.WaitUntilToPossibleSetRenderTarget(m_mainRenderTarget);
 		rc.SetRenderTargetAndViewport(m_mainRenderTarget);
 
-		//ƒƒCƒ“ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚É2D•`‰æŒã‚ÌƒXƒvƒ‰ƒCƒg‚ğ•`‰æ‚·‚é
+		//ãƒ¡ã‚¤ãƒ³ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã«2Dæç”»å¾Œã®ã‚¹ãƒ—ãƒ©ã‚¤ãƒˆã‚’æç”»ã™ã‚‹
 		m_2DSprite.Draw(rc);
 
 		rc.WaitUntilFinishDrawingToRenderTarget(m_mainRenderTarget);
@@ -143,7 +143,7 @@ namespace nsK2EngineLow
 			g_graphicsEngine->GetCurrentFrameBuffuerDSV()
 		);
 
-		// ƒrƒ…[ƒ|[ƒg‚ğw’è‚·‚é
+		// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆã‚’æŒ‡å®šã™ã‚‹
 		D3D12_VIEWPORT viewport;
 		viewport.TopLeftX = 0;
 		viewport.TopLeftY = 0;

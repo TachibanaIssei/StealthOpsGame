@@ -237,6 +237,7 @@
     <ClCompile Include="mySourceCode\SpriteRender.cpp">
       <Filter>mySourceCode</Filter>
     </ClCompile>
+    <ClCompile Include="mySourceCode\SkyCube.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="k2EngineLowPreCompile.h" />
@@ -526,6 +527,7 @@
     <ClInclude Include="mySourceCode\SpriteRender.h">
       <Filter>mySourceCode</Filter>
     </ClInclude>
+    <ClInclude Include="mySourceCode\SkyCube.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="graphics">
