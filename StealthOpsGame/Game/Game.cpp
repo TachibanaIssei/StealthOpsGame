@@ -45,6 +45,6 @@ void Game::Render(RenderContext& rc)
 void Game::InitSkyCube()
 {
 	m_skyCube = NewGO<SkyCube>(0, "skyCube");
-	m_skyCube->SetScale(600.0f);
+	m_skyCube->SetScale(400.0f);
 	m_skyCube->SetLuminance(1.0f);
 }
