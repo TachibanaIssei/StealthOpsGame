@@ -207,5 +207,6 @@ namespace nsK2EngineLow
 		Vector3						m_scale = Vector3::One;						//大きさ
 		Quaternion					m_rotation = Quaternion::Identity;			//回転
 		Model						m_forwardRenderModel;						//フォワードレンダリングで描画されるモデル
+		Model						m_renderToGBufferModel;						//RenderToGBufferで描画されるモデル
 	};
 }
