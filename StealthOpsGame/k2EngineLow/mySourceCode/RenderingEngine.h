@@ -14,6 +14,10 @@ namespace nsK2EngineLow
 		RenderingEngine();
 		~RenderingEngine();
 		/// <summary>
+		/// 初期化処理
+		/// </summary>
+		void Init();
+		/// <summary>
 		/// 描画オブジェクトを追加。
 		/// </summary>
 		/// <param name="renderObject"></param>
@@ -27,10 +31,6 @@ namespace nsK2EngineLow
 		void Execute(RenderContext& rc);
 
 	private:
-		/// <summary>
-		/// 初期化処理
-		/// </summary>
-		void Init();
 		/// <summary>
 		/// メインレンダーターゲットの初期化
 		/// </summary>

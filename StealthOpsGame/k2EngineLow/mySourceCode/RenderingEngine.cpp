@@ -5,7 +5,6 @@ namespace nsK2EngineLow
 {
 	RenderingEngine::RenderingEngine()
 	{
-		Init();
 	}
 	RenderingEngine::~RenderingEngine()
 	{
@@ -33,8 +32,8 @@ namespace nsK2EngineLow
 			g_graphicsEngine->GetFrameBufferHeight(),
 			1,
 			1,
-			DXGI_FORMAT_R32G32B32A32_FLOAT,
-			DXGI_FORMAT_D32_FLOAT
+			g_mainRenderTargetFormat.colorBufferFormat,
+            g_mainRenderTargetFormat.depthBufferFormat
 		);
 	}
 	void RenderingEngine::Init2DRenderTarget()
