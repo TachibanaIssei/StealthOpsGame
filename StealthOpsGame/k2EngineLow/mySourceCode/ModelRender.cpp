@@ -98,6 +98,14 @@ namespace nsK2EngineLow
 		}
 	}
 
+	void ModelRender::InitModelOnRenderGBuffer(RenderingEngine& renderingEngine, const char* tkmFilePath, const EnModelUpAxis enModelUpAxis)
+	{
+	}
+
+	void ModelRender::OnRenderToGBuffer(RenderContext& rc)
+	{
+	}
+
 	void ModelRender::OnForwardRender(RenderContext& rc)
 	{
 		if (m_forwardRenderModel.IsInited()) {
