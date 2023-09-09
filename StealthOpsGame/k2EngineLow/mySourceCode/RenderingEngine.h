@@ -1,4 +1,8 @@
 ﻿#pragma once
+
+#include "MyRenderer.h"
+#include "SceneLight.h"
+
 namespace nsK2EngineLow
 {
 	/// <summary>
