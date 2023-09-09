@@ -124,6 +124,9 @@ namespace nsK2EngineLow
 
 	void ModelRender::OnRenderToGBuffer(RenderContext& rc)
 	{
+		if (m_renderToGBufferModel.IsInited()) {
+			m_renderToGBufferModel.Draw(rc, 1);
+		}
 	}
 
 	void ModelRender::OnForwardRender(RenderContext& rc)
