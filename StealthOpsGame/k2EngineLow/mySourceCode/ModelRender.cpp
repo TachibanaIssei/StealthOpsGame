@@ -98,8 +98,28 @@ namespace nsK2EngineLow
 		}
 	}
 
-	void ModelRender::InitModelOnRenderGBuffer(RenderingEngine& renderingEngine, const char* tkmFilePath, const EnModelUpAxis enModelUpAxis)
+	void ModelRender::InitModelOnRenderGBuffer(
+		RenderingEngine& renderingEngine,
+		const char* tkmFilePath,
+		const EnModelUpAxis enModelUpAxis)
 	{
+		ModelInitData modelInitData;
+		modelInitData.m_fxFilePath = "Assets/shader/preProcess/RenderToGBufferFor3DModel.fx";
+
+		if (m_animationClips != nullptr) {
+			modelInitData.m_vsSkinEntryPointFunc = "VSSkinMain";
+		}
+		if (m_animationClips != nullptr) {
+			modelInitData.m_skeleton = &m_skeleton;
+		}
+		modelInitData.m_modelUpAxis = enModelUpAxis;
+
+		modelInitData.m_tkmFilePath = tkmFilePath;
+		modelInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		modelInitData.m_colorBufferFormat[1] = DXGI_FORMAT_R8G8B8A8_SNORM;
+		modelInitData.m_colorBufferFormat[2] = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+		m_renderToGBufferModel.Init(modelInitData);
 	}
 
 	void ModelRender::OnRenderToGBuffer(RenderContext& rc)
