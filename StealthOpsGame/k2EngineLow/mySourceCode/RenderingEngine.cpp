@@ -12,17 +12,56 @@ namespace nsK2EngineLow
 	void RenderingEngine::Init()
 	{
 		InitMainRenderTarget();
+		InitGBuffer();
 		Init2DRenderTarget();
 		InitCopyMainRenderTargetToFrameBufferSprite();
 	}
 	void RenderingEngine::Execute(RenderContext& rc)
 	{
 		//モデルを描画
+		RenderToGBuffer(rc);
 		FowardRendering(rc);
 		Render2D(rc);
 		CopyMainRenderTargetToFrameBuffer(rc);
 
 		m_renderObjects.clear();
+	}
+	void RenderingEngine::InitGBuffer()
+	{
+		int frameBuffer_w = g_graphicsEngine->GetFrameBufferWidth();
+		int frameBuffer_h = g_graphicsEngine->GetFrameBufferHeight();
+
+		// アルベドカラーを出力用のレンダリングターゲットを初期化する
+		float clearColor[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+		m_gBuffer[enGBufferAlbedoDepth].Create(
+			frameBuffer_w,
+			frameBuffer_h,
+			1,
+			1,
+			DXGI_FORMAT_R32G32B32A32_FLOAT,
+			DXGI_FORMAT_D32_FLOAT,
+			clearColor
+		);
+
+		// 法線出力用のレンダリングターゲットを初期化する
+		m_gBuffer[enGBufferNormal].Create(
+			frameBuffer_w,
+			frameBuffer_h,
+			1,
+			1,
+			DXGI_FORMAT_R8G8B8A8_SNORM,
+			DXGI_FORMAT_UNKNOWN
+		);
+
+		// メタリック、影パラメータ、スムース出力用のレンダリングターゲットを初期化する    
+		m_gBuffer[enGBufferMetaricShadowSmooth].Create(
+			frameBuffer_w,
+			frameBuffer_h,
+			1,
+			1,
+			DXGI_FORMAT_R8G8B8A8_UNORM,
+			DXGI_FORMAT_UNKNOWN
+		);
 	}
 	void RenderingEngine::InitMainRenderTarget()
 	{
@@ -87,6 +126,33 @@ namespace nsK2EngineLow
 
 		//初期化オブジェクトを使って、スプライトを初期化する
 		m_copyToFrameBufferSprite.Init(spriteInitData);
+	}
+	void RenderingEngine::RenderToGBuffer(RenderContext& rc)
+	{
+		BeginGPUEvent("RenderToGBuffer");
+		// レンダリングターゲットをG-Bufferに変更
+		RenderTarget* rts[enGBufferNum] = {
+			&m_gBuffer[enGBufferAlbedoDepth],         // 0番目のレンダリングターゲット
+			&m_gBuffer[enGBufferNormal],              // 1番目のレンダリングターゲット
+			&m_gBuffer[enGBufferMetaricShadowSmooth], // 2番目のレンダリングターゲット
+		};
+
+		// まず、レンダリングターゲットとして設定できるようになるまで待つ
+		rc.WaitUntilToPossibleSetRenderTargets(ARRAYSIZE(rts), rts);
+
+		// レンダリングターゲットを設定
+		rc.SetRenderTargets(ARRAYSIZE(rts), rts);
+
+		// レンダリングターゲットをクリア
+		rc.ClearRenderTargetViews(ARRAYSIZE(rts), rts);
+
+		for (auto& renderObj : m_renderObjects) {
+			renderObj->OnRenderToGBuffer(rc);
+		}
+
+		// レンダリングターゲットへの書き込み待ち
+		rc.WaitUntilFinishDrawingToRenderTargets(ARRAYSIZE(rts), rts);
+		EndGPUEvent();
 	}
 	void RenderingEngine::FowardRendering(RenderContext& rc)
 	{

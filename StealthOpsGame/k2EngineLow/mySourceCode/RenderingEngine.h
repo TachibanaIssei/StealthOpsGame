@@ -32,6 +32,10 @@ namespace nsK2EngineLow
 
 	private:
 		/// <summary>
+		/// G-Bufferを初期化
+		/// </summary>
+		void InitGBuffer();
+		/// <summary>
 		/// メインレンダーターゲットの初期化
 		/// </summary>
 		void InitMainRenderTarget();
@@ -43,6 +47,11 @@ namespace nsK2EngineLow
 		/// メインレンダリングターゲットのカラーバッファの内容をフレームバッファにコピーするスプライトを初期化する
 		/// </summary>
 		void InitCopyMainRenderTargetToFrameBufferSprite();
+		/// <summary>
+		/// G-Bufferへの描画
+		/// </summary>
+		/// <param name="rc"></param>
+		void RenderToGBuffer(RenderContext& rc);
 		/// <summary>
 		/// フォワードレンダーモデルの描画
 		/// </summary>
@@ -60,8 +69,19 @@ namespace nsK2EngineLow
 		void CopyMainRenderTargetToFrameBuffer(RenderContext& rc);
 
 	private:
+		// GBufferの定義
+		enum EnGBuffer
+		{
+			enGBufferAlbedoDepth,           // アルベドと深度値。αに深度値が記憶されています。
+			enGBufferNormal,                // 法線
+			enGBufferMetaricShadowSmooth,   // メタリック、影パラメータ、スムース。
+											// メタリックがr、影パラメータがg、スムースがa。gは未使用。
+			enGBufferNum,                   // G-Bufferの数
+		};
+
 		RenderTarget				m_mainRenderTarget;			//メインレンダーターゲット
 		RenderTarget				m_2DRenderTarget;			//2D描画用のレンダーターゲット
+		RenderTarget				m_gBuffer[enGBufferNum];	//G-Bufferレンダーターゲット配列
 		Sprite						m_copyToFrameBufferSprite;	//フレームバッファにコピーする画像
 		Sprite						m_2DSprite;					//2D描画用のスプライト
 		Sprite						m_mainSprite;
