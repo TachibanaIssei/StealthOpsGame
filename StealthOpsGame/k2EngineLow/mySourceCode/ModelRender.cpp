@@ -10,7 +10,28 @@ namespace nsK2EngineLow
 	{
 	}
 
-	void ModelRender::Init(const char* tkmFilePath, AnimationClip* animationClips, const int numAnimationClips, const EnModelUpAxis enModelUpAxis, const bool shadow)
+	void ModelRender::Init(
+		const char* tkmFilePath, 
+		AnimationClip* animationClips,
+		const int numAnimationClips, 
+		const EnModelUpAxis enModelUpAxis, 
+		const bool shadow)
+	{
+		// スケルトンを初期化
+		InitSkeleton(tkmFilePath);
+		// アニメーションを初期化
+		InitAnimation(animationClips, numAnimationClips, enModelUpAxis);
+		// GBuffer描画用のモデルを初期化。
+		InitModelOnRenderGBuffer(*g_renderingEngine, tkmFilePath, enModelUpAxis);
+		// 各種ワールド行列を更新する
+		UpdateWorldMatrixInModels();
+	}
+
+	void ModelRender::InitForwardRendering(
+		const char* tkmFilePath,
+		AnimationClip* animationClips = nullptr,
+		const int numAnimationClips = 0,
+		const EnModelUpAxis enModelUpAxis = enModelUpAxisZ)
 	{
 		ModelInitData modelInitData;
 
@@ -35,13 +56,7 @@ namespace nsK2EngineLow
 			modelInitData.m_vsSkinEntryPointFunc = "VSSkinMain";
 		}
 		m_forwardRenderModel.Init(modelInitData);
-	}
-
-	void ModelRender::InitForwardRendering(ModelInitData& initData)
-	{
-		InitSkeleton(initData.m_tkmFilePath);
-		initData.m_colorBufferFormat[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
-		m_forwardRenderModel.Init(initData);
+		// 各種ワールド行列を更新する
 		UpdateWorldMatrixInModels();
 	}
 
@@ -99,7 +114,6 @@ namespace nsK2EngineLow
 	}
 
 	void ModelRender::InitModelOnRenderGBuffer(
-		RenderingEngine& renderingEngine,
 		const char* tkmFilePath,
 		const EnModelUpAxis enModelUpAxis)
 	{

@@ -27,7 +27,13 @@ namespace nsK2EngineLow
 		/// 特殊なシェーディングを行いたい場合の初期化
 		/// </summary>
 		/// <param name="initData">モデルデータ</param>
-		void InitForwardRendering(ModelInitData& initData);
+		void InitForwardRendering(
+			const char* tkmFilePath,
+			AnimationClip* animationClips = nullptr,
+			const int numAnimationClips = 0,
+			const EnModelUpAxis enModelUpAxis = enModelUpAxisZ,
+			const bool isShadowReceiver = true
+		);
 
 		/// <summary>
 		/// 更新処理
