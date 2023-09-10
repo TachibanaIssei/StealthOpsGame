@@ -17,22 +17,6 @@ namespace nsK2EngineLow
 		const EnModelUpAxis enModelUpAxis, 
 		const bool shadow)
 	{
-		// スケルトンを初期化
-		InitSkeleton(tkmFilePath);
-		// アニメーションを初期化
-		InitAnimation(animationClips, numAnimationClips, enModelUpAxis);
-		// GBuffer描画用のモデルを初期化。
-		InitModelOnRenderGBuffer(*g_renderingEngine, tkmFilePath, enModelUpAxis);
-		// 各種ワールド行列を更新する
-		UpdateWorldMatrixInModels();
-	}
-
-	void ModelRender::InitForwardRendering(
-		const char* tkmFilePath,
-		AnimationClip* animationClips = nullptr,
-		const int numAnimationClips = 0,
-		const EnModelUpAxis enModelUpAxis = enModelUpAxisZ)
-	{
 		ModelInitData modelInitData;
 
 		//tkmファイルパスを設定
@@ -42,9 +26,9 @@ namespace nsK2EngineLow
 		//モデルの上方向を設定
 		modelInitData.m_modelUpAxis = enModelUpAxis;
 
-		// スケルトンを初期化。
+		// スケルトンを初期化
 		InitSkeleton(tkmFilePath);
-		// アニメーションを初期化。
+		// アニメーションを初期化
 		InitAnimation(animationClips, numAnimationClips, enModelUpAxis);
 
 		//アニメーションが設定されていたら。
@@ -56,8 +40,16 @@ namespace nsK2EngineLow
 			modelInitData.m_vsSkinEntryPointFunc = "VSSkinMain";
 		}
 		m_forwardRenderModel.Init(modelInitData);
+
+		// GBuffer描画用のモデルを初期化。
+		InitModelOnRenderGBuffer(tkmFilePath, enModelUpAxis);
 		// 各種ワールド行列を更新する
 		UpdateWorldMatrixInModels();
+	}
+
+	void ModelRender::InitForwardRendering(ModelInitData initData)
+	{
+		m_forwardRenderModel.Init(initData);
 	}
 
 	void ModelRender::Update()
@@ -121,9 +113,7 @@ namespace nsK2EngineLow
 		modelInitData.m_fxFilePath = "Assets/shader/preProcess/RenderToGBufferFor3DModel.fx";
 
 		if (m_animationClips != nullptr) {
-			modelInitData.m_vsSkinEntryPointFunc = "VSSkinMain";
-		}
-		if (m_animationClips != nullptr) {
+			modelInitData.m_vsSkinEntryPointFunc = "VSMainSkin";
 			modelInitData.m_skeleton = &m_skeleton;
 		}
 		modelInitData.m_modelUpAxis = enModelUpAxis;

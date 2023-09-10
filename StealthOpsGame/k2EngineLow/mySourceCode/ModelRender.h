@@ -26,14 +26,7 @@ namespace nsK2EngineLow
 		/// <summary>
 		/// 特殊なシェーディングを行いたい場合の初期化
 		/// </summary>
-		/// <param name="initData">モデルデータ</param>
-		void InitForwardRendering(
-			const char* tkmFilePath,
-			AnimationClip* animationClips = nullptr,
-			const int numAnimationClips = 0,
-			const EnModelUpAxis enModelUpAxis = enModelUpAxisZ,
-			const bool isShadowReceiver = true
-		);
+		void InitForwardRendering(ModelInitData initData);
 
 		/// <summary>
 		/// 更新処理
@@ -197,11 +190,9 @@ namespace nsK2EngineLow
 		/// <summary>
 		/// GBuffer描画用のモデルを初期化
 		/// </summary>
-		/// <param name="renderingEngine">レンダリングエンジン</param>
 		/// <param name="tkmFilePath">tkmファイルパス</param>
 		/// <param name="enModelUpAxis">モデルの上方向</param>
 		void InitModelOnRenderGBuffer(
-			RenderingEngine& renderingEngine,
 			const char* tkmFilePath,
 			const EnModelUpAxis enModelUpAxis
 		);
