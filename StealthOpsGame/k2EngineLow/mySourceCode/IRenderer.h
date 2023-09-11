@@ -15,6 +15,13 @@ namespace nsK2EngineLow {
 
 		}
 		/// <summary>
+		/// G-Buffer描画パスから呼ばれる処理。
+		/// </summary>
+		virtual void OnRenderToGBuffer(RenderContext& rc)
+		{
+
+		}
+		/// <summary>
 		/// 2Dオブジェクトから呼ばれる処理
 		/// </summary>
 		/// <param name="rc"></param>

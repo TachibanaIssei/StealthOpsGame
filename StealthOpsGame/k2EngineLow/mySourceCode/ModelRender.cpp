@@ -10,7 +10,12 @@ namespace nsK2EngineLow
 	{
 	}
 
-	void ModelRender::Init(const char* tkmFilePath, AnimationClip* animationClips, const int numAnimationClips, const EnModelUpAxis enModelUpAxis, const bool shadow)
+	void ModelRender::Init(
+		const char* tkmFilePath, 
+		AnimationClip* animationClips,
+		const int numAnimationClips, 
+		const EnModelUpAxis enModelUpAxis, 
+		const bool shadow)
 	{
 		ModelInitData modelInitData;
 
@@ -21,9 +26,9 @@ namespace nsK2EngineLow
 		//モデルの上方向を設定
 		modelInitData.m_modelUpAxis = enModelUpAxis;
 
-		// スケルトンを初期化。
+		// スケルトンを初期化
 		InitSkeleton(tkmFilePath);
-		// アニメーションを初期化。
+		// アニメーションを初期化
 		InitAnimation(animationClips, numAnimationClips, enModelUpAxis);
 
 		//アニメーションが設定されていたら。
@@ -35,14 +40,16 @@ namespace nsK2EngineLow
 			modelInitData.m_vsSkinEntryPointFunc = "VSSkinMain";
 		}
 		m_forwardRenderModel.Init(modelInitData);
+
+		// GBuffer描画用のモデルを初期化。
+		InitModelOnRenderGBuffer(tkmFilePath, enModelUpAxis);
+		// 各種ワールド行列を更新する
+		UpdateWorldMatrixInModels();
 	}
 
-	void ModelRender::InitForwardRendering(ModelInitData& initData)
+	void ModelRender::InitForwardRendering(ModelInitData initData)
 	{
-		InitSkeleton(initData.m_tkmFilePath);
-		initData.m_colorBufferFormat[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		m_forwardRenderModel.Init(initData);
-		UpdateWorldMatrixInModels();
 	}
 
 	void ModelRender::Update()
@@ -95,6 +102,34 @@ namespace nsK2EngineLow
 				m_animationClips,
 				numAnimationClips
 			);
+		}
+	}
+
+	void ModelRender::InitModelOnRenderGBuffer(
+		const char* tkmFilePath,
+		const EnModelUpAxis enModelUpAxis)
+	{
+		ModelInitData modelInitData;
+		modelInitData.m_fxFilePath = "Assets/shader/preProcess/RenderToGBufferFor3DModel.fx";
+
+		if (m_animationClips != nullptr) {
+			modelInitData.m_vsSkinEntryPointFunc = "VSMainSkin";
+			modelInitData.m_skeleton = &m_skeleton;
+		}
+		modelInitData.m_modelUpAxis = enModelUpAxis;
+
+		modelInitData.m_tkmFilePath = tkmFilePath;
+		modelInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		modelInitData.m_colorBufferFormat[1] = DXGI_FORMAT_R8G8B8A8_SNORM;
+		modelInitData.m_colorBufferFormat[2] = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+		m_renderToGBufferModel.Init(modelInitData);
+	}
+
+	void ModelRender::OnRenderToGBuffer(RenderContext& rc)
+	{
+		if (m_renderToGBufferModel.IsInited()) {
+			m_renderToGBufferModel.Draw(rc, 1);
 		}
 	}
 

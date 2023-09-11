@@ -26,8 +26,7 @@ namespace nsK2EngineLow
 		/// <summary>
 		/// 特殊なシェーディングを行いたい場合の初期化
 		/// </summary>
-		/// <param name="initData">モデルデータ</param>
-		void InitForwardRendering(ModelInitData& initData);
+		void InitForwardRendering(ModelInitData initData);
 
 		/// <summary>
 		/// 更新処理
@@ -172,13 +171,11 @@ namespace nsK2EngineLow
 		/// 各種モデルのワールド行列を更新する
 		/// </summary>
 		void UpdateWorldMatrixInModels();
-
 		/// <summary>
 		/// スケルトンの初期化。
 		/// </summary>
 		/// <param name="filePath">ファイルパス。</param>
 		void InitSkeleton(const char* filePath);
-
 		/// <summary>
 		/// アニメーションの初期化。
 		/// </summary>
@@ -190,7 +187,20 @@ namespace nsK2EngineLow
 			const int numAnimationClips,
 			const EnModelUpAxis enModelUpAxis
 		);
-
+		/// <summary>
+		/// GBuffer描画用のモデルを初期化
+		/// </summary>
+		/// <param name="tkmFilePath">tkmファイルパス</param>
+		/// <param name="enModelUpAxis">モデルの上方向</param>
+		void InitModelOnRenderGBuffer(
+			const char* tkmFilePath,
+			const EnModelUpAxis enModelUpAxis
+		);
+		/// <summary>
+		/// GBuffer描画パスから呼ばれる処理
+		/// </summary>
+		/// <param name="rc"></param>
+		void OnRenderToGBuffer(RenderContext& rc) override;
 		/// <summary>
 		/// フォワードレンダーパスから呼ばれる処理
 		/// </summary>
@@ -207,5 +217,6 @@ namespace nsK2EngineLow
 		Vector3						m_scale = Vector3::One;						//大きさ
 		Quaternion					m_rotation = Quaternion::Identity;			//回転
 		Model						m_forwardRenderModel;						//フォワードレンダリングで描画されるモデル
+		Model						m_renderToGBufferModel;						//RenderToGBufferで描画されるモデル
 	};
 }
