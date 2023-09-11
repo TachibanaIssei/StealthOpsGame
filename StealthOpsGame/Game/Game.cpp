@@ -21,6 +21,7 @@ bool Game::Start()
 
 	InitFontRender();
 
+	g_renderingEngine->SetAmbient({ 1.0f,1.0f,1.0f });
 	InitSkyCube();
 
 	return true;

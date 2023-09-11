@@ -11,6 +11,12 @@ namespace nsK2EngineLow
 	class RenderingEngine : public Noncopyable
 	{
 	public:
+		struct SDeferredLightingCB
+		{
+			Light m_light;	//ライト
+		};
+
+	public:
 		RenderingEngine();
 		~RenderingEngine();
 		/// <summary>
@@ -29,12 +35,38 @@ namespace nsK2EngineLow
 		/// 描画処理を実行する
 		/// </summary>
 		void Execute(RenderContext& rc);
+		/// <summary>
+		/// ディレクションライトのパラメータを設定
+		/// </summary>
+		/// <param name="lightNo"></param>
+		/// <param name="direction"></param>
+		/// <param name="color"></param>
+		void SetDirectionLight(const int lightNo, const Vector3 direction, const Vector3 color)
+		{
+			m_sceneLight.SetDirectionLight(lightNo, direction, color);
+		}
+		/// <summary>
+		/// 環境光を設定。
+		/// </summary>
+		/// <param name="ambient"></param>
+		void SetAmbient(const Vector3 ambient)
+		{
+			m_sceneLight.SetAmbient(ambient);
+		}
 
 	private:
 		/// <summary>
 		/// G-Bufferを初期化
 		/// </summary>
 		void InitGBuffer();
+		/// <summary>
+		/// ディファードライティングに関連する初期化
+		/// </summary>
+		void InitDeferredLighting();
+		/// <summary>
+		/// ディファードライティングで使用する画像の初期化
+		/// </summary>
+		void InitDeferredLightingSprite();
 		/// <summary>
 		/// メインレンダーターゲットの初期化
 		/// </summary>
@@ -52,6 +84,11 @@ namespace nsK2EngineLow
 		/// </summary>
 		/// <param name="rc"></param>
 		void RenderToGBuffer(RenderContext& rc);
+		/// <summary>
+		/// ディファードライティング
+		/// </summary>
+		/// <param name="rc"></param>
+		void DeferredLighting(RenderContext& rc);
 		/// <summary>
 		/// フォワードレンダーモデルの描画
 		/// </summary>
@@ -79,12 +116,15 @@ namespace nsK2EngineLow
 			enGBufferNum,                   // G-Bufferの数
 		};
 
+		SDeferredLightingCB			m_deferredLightingCB;       // ディファードライティング用の定数バッファ
+		SceneLight					m_sceneLight;               // シーンライト
 		RenderTarget				m_mainRenderTarget;			//メインレンダーターゲット
 		RenderTarget				m_2DRenderTarget;			//2D描画用のレンダーターゲット
 		RenderTarget				m_gBuffer[enGBufferNum];	//G-Bufferレンダーターゲット配列
 		Sprite						m_copyToFrameBufferSprite;	//フレームバッファにコピーする画像
 		Sprite						m_2DSprite;					//2D描画用のスプライト
 		Sprite						m_mainSprite;
+		Sprite						m_diferredLightingSprite;	//ディファードライティングを行うためのスプライト
 		std::vector<IRenderer*>		m_renderObjects;			//描画オブジェクトのリスト
 	};
 }

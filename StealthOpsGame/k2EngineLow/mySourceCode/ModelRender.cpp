@@ -39,7 +39,7 @@ namespace nsK2EngineLow
 			//スキンがある用の頂点シェーダーを設定する。
 			modelInitData.m_vsSkinEntryPointFunc = "VSSkinMain";
 		}
-		m_forwardRenderModel.Init(modelInitData);
+		//m_forwardRenderModel.Init(modelInitData);
 
 		// GBuffer描画用のモデルを初期化。
 		InitModelOnRenderGBuffer(tkmFilePath, enModelUpAxis);
