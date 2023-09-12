@@ -17,30 +17,10 @@ namespace nsK2EngineLow
 		const EnModelUpAxis enModelUpAxis, 
 		const bool shadow)
 	{
-		ModelInitData modelInitData;
-
-		//tkmファイルパスを設定
-		modelInitData.m_tkmFilePath = tkmFilePath;
-		//シェーダーファイルパスを設定
-		modelInitData.m_fxFilePath = "Assets/shader/model.fx";
-		//モデルの上方向を設定
-		modelInitData.m_modelUpAxis = enModelUpAxis;
-
 		// スケルトンを初期化
 		InitSkeleton(tkmFilePath);
 		// アニメーションを初期化
 		InitAnimation(animationClips, numAnimationClips, enModelUpAxis);
-
-		//アニメーションが設定されていたら。
-		if (m_animationClips != nullptr)
-		{
-			//スケルトンを指定する
-			modelInitData.m_skeleton = &m_skeleton;
-			//スキンがある用の頂点シェーダーを設定する。
-			modelInitData.m_vsSkinEntryPointFunc = "VSSkinMain";
-		}
-		//m_forwardRenderModel.Init(modelInitData);
-
 		// GBuffer描画用のモデルを初期化。
 		InitModelOnRenderGBuffer(tkmFilePath, enModelUpAxis);
 		// 各種ワールド行列を更新する
@@ -49,7 +29,22 @@ namespace nsK2EngineLow
 
 	void ModelRender::InitForwardRendering(ModelInitData initData)
 	{
+		InitSkeleton(initData.m_tkmFilePath);
+		initData.m_colorBufferFormat[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		m_forwardRenderModel.Init(initData);
+		UpdateWorldMatrixInModels();
+	}
+
+	void ModelRender::InitTrancelucent(const char* tkmFilePath, AnimationClip* animationClips, const int numAnimationClips, const EnModelUpAxis enModelUpAxis)
+	{
+		//スケルトンを初期化
+		InitSkeleton(tkmFilePath);
+		//アニメーションを初期化
+		InitAnimation(animationClips, numAnimationClips, enModelUpAxis);
+		//半透明モデルを初期化
+		InitModelOnTranslucent(tkmFilePath, enModelUpAxis);
+		//各種ワールド行列を更新
+		UpdateWorldMatrixInModels();
 	}
 
 	void ModelRender::Update()
@@ -60,7 +55,14 @@ namespace nsK2EngineLow
 		if (m_skeleton.IsInited())
 		{
 			//スケルトンを更新する
-			m_skeleton.Update(m_forwardRenderModel.GetWorldMatrix());
+			if (m_renderToGBufferModel.IsInited())
+			{
+				m_skeleton.Update(m_renderToGBufferModel.GetWorldMatrix());
+			}
+			else if (m_translucentModel.IsInited())
+			{
+				m_skeleton.Update(m_translucentModel.GetWorldMatrix());
+			}
 		}
 
 		//アニメーションを進める
@@ -72,11 +74,30 @@ namespace nsK2EngineLow
 		g_renderingEngine->AddRenderObject(this);
 	}
 
+	void ModelRender::SetupVertexShaderEntryPointFunc(ModelInitData& modelInitData)
+	{
+		modelInitData.m_vsSkinEntryPointFunc = "VSMain";
+		modelInitData.m_vsEntryPointFunc = "VSMain";
+
+		if (m_animationClips != nullptr) {
+			// アニメーションあり。
+			modelInitData.m_vsSkinEntryPointFunc = "VSMainSkin";
+		}
+	}
+
 	void ModelRender::UpdateWorldMatrixInModels()
 	{
+		if (m_renderToGBufferModel.IsInited())
+		{
+			m_renderToGBufferModel.UpdateWorldMatrix(m_position, m_rotation, m_scale);
+		}
 		if (m_forwardRenderModel.IsInited())
 		{
 			m_forwardRenderModel.UpdateWorldMatrix(m_position, m_rotation, m_scale);
+		}
+		if (m_translucentModel.IsInited())
+		{
+			m_translucentModel.UpdateWorldMatrix(m_position, m_rotation, m_scale);
 		}
 	}
 
@@ -105,6 +126,29 @@ namespace nsK2EngineLow
 		}
 	}
 
+	void ModelRender::InitModelOnTranslucent(const char* tkmFilePath, const EnModelUpAxis enModelUpAxis)
+	{
+		ModelInitData modelInitData;
+		modelInitData.m_fxFilePath = "Assets/shader/model.fx";
+
+		//頂点シェーダーのエントリーポイントを設定
+		SetupVertexShaderEntryPointFunc(modelInitData);
+
+		if (m_animationClips != nullptr) {
+			modelInitData.m_skeleton = &m_skeleton;
+		}
+		modelInitData.m_psEntryPointFunc = "PSMainSoftShadow";
+
+		modelInitData.m_modelUpAxis = enModelUpAxis;
+		modelInitData.m_expandConstantBuffer = &g_renderingEngine->GetDeferredLightingCB();
+		modelInitData.m_expandConstantBufferSize = sizeof(g_renderingEngine->GetDeferredLightingCB());
+		modelInitData.m_tkmFilePath = tkmFilePath;
+		modelInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		modelInitData.m_alphaBlendMode = AlphaBlendMode_Trans;
+
+		m_translucentModel.Init(modelInitData);
+	}
+
 	void ModelRender::InitModelOnRenderGBuffer(
 		const char* tkmFilePath,
 		const EnModelUpAxis enModelUpAxis)
@@ -112,8 +156,9 @@ namespace nsK2EngineLow
 		ModelInitData modelInitData;
 		modelInitData.m_fxFilePath = "Assets/shader/preProcess/RenderToGBufferFor3DModel.fx";
 
+		//頂点シェーダーのエントリーポイントを設定
+		SetupVertexShaderEntryPointFunc(modelInitData);
 		if (m_animationClips != nullptr) {
-			modelInitData.m_vsSkinEntryPointFunc = "VSMainSkin";
 			modelInitData.m_skeleton = &m_skeleton;
 		}
 		modelInitData.m_modelUpAxis = enModelUpAxis;
@@ -137,6 +182,12 @@ namespace nsK2EngineLow
 	{
 		if (m_forwardRenderModel.IsInited()) {
 			m_forwardRenderModel.Draw(rc, 1);
+		}
+	}
+	void ModelRender::OnTlanslucentRender(RenderContext& rc)
+	{
+		if (m_translucentModel.IsInited()) {
+			m_translucentModel.Draw(rc, 1);
 		}
 	}
 }

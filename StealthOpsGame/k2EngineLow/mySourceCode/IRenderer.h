@@ -22,6 +22,14 @@ namespace nsK2EngineLow {
 
 		}
 		/// <summary>
+		/// 半透明オブジェクト描画パスから呼ばれる処理。
+		/// </summary>
+		/// <param name="rc"></param>
+		virtual void OnTlanslucentRender(RenderContext& rc)
+		{
+
+		}
+		/// <summary>
 		/// 2Dオブジェクトから呼ばれる処理
 		/// </summary>
 		/// <param name="rc"></param>

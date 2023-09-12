@@ -53,6 +53,14 @@ namespace nsK2EngineLow
 		{
 			m_sceneLight.SetAmbient(ambient);
 		}
+		/// <summary>
+		/// ディファードライティングの定数バッファを取得
+		/// </summary>
+		/// <returns>定数バッファ</returns>
+		SDeferredLightingCB& GetDeferredLightingCB()
+		{
+			return m_deferredLightingCB;
+		}
 
 	private:
 		/// <summary>

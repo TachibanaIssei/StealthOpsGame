@@ -221,6 +221,11 @@ namespace nsK2EngineLow
 			renderObj->OnForwardRender(rc);
 		}
 
+		//半透明オブジェクトの描画
+		for (auto& renderObj : m_renderObjects) {
+			renderObj->OnTlanslucentRender(rc);
+		}
+
 		//レンダリングターゲットへの書き込み終了待ち
 		rc.WaitUntilFinishDrawingToRenderTarget(m_mainRenderTarget);
 
