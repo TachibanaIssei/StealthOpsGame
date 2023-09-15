@@ -79,7 +79,6 @@ SPSIn VSMainCore(SVSIn vsIn, float4x4 mWorldLocal)
 /// </summary>
 float4 PSMainCore( SPSIn In, uniform int isSoftShadow) 
 {
-	//G-Bufferの内容を使ってライティング
     //アルベドカラーをサンプリング。
     float4 albedoColor = albedoTexture.Sample(Sampler, In.uv);
     //法線をサンプリング。
@@ -114,7 +113,7 @@ float4 PSMainCore( SPSIn In, uniform int isSoftShadow)
         
         lig += CalcLighting(
             light.directionalLight[ligNo].direction,
-            light.directionalLight[ligNo].color.xyz,
+            light.directionalLight[ligNo].color,
             normal,
             toEye,
             albedoColor,
@@ -125,7 +124,7 @@ float4 PSMainCore( SPSIn In, uniform int isSoftShadow)
     }
 
 	// 環境光による底上げ
-    lig += light.ambientLight * albedoColor.xyz;
+    lig += light.ambientLight * albedoColor;
 
 	float4 finalColor = 1.0f;
     finalColor.xyz = lig;
