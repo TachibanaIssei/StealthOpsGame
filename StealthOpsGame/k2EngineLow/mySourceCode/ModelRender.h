@@ -29,6 +29,20 @@ namespace nsK2EngineLow
 		void InitForwardRendering(ModelInitData initData);
 
 		/// <summary>
+		/// 半透明描画を行うオブジェクトの初期化
+		/// </summary>
+		/// <param name="tkmFilePath">tkmファイルパス</param>
+		/// <param name="animationClips">アニメーションクリップ</param>
+		/// <param name="numAnimationClips">アニメーションクリップの数</param>
+		/// <param name="enModelUpAxis">モデルの上方向</param>
+		void InitTrancelucent(
+			const char* tkmFilePath,
+			AnimationClip* animationClips,
+			const int numAnimationClips,
+			const EnModelUpAxis enModelUpAxis
+		);
+
+		/// <summary>
 		/// 更新処理
 		/// </summary>
 		void Update();
@@ -168,6 +182,11 @@ namespace nsK2EngineLow
 
 	private:
 		/// <summary>
+		/// 頂点シェーダーのエントリーポイントを設定
+		/// </summary>
+		/// <param name="modelInitData"></param>
+		void SetupVertexShaderEntryPointFunc(ModelInitData& modelInitData);
+		/// <summary>
 		/// 各種モデルのワールド行列を更新する
 		/// </summary>
 		void UpdateWorldMatrixInModels();
@@ -185,6 +204,15 @@ namespace nsK2EngineLow
 		void InitAnimation(
 			AnimationClip* animationClips,
 			const int numAnimationClips,
+			const EnModelUpAxis enModelUpAxis
+		);
+		/// <summary>
+		/// 半透明モデルの初期化
+		/// </summary>
+		/// <param name="tkmFilePath"></param>
+		/// <param name="enModelUpAxis"></param>
+		void InitModelOnTranslucent(
+			const char* tkmFilePath,
 			const EnModelUpAxis enModelUpAxis
 		);
 		/// <summary>
@@ -206,6 +234,11 @@ namespace nsK2EngineLow
 		/// </summary>
 		/// <param name="rc"></param>
 		void OnForwardRender(RenderContext& rc) override;
+		/// <summary>
+		/// 半透明オブジェクト描画パスから呼ばれる処理
+		/// </summary>
+		/// <param name="rc"></param>
+		void OnTlanslucentRender(RenderContext& rc) override;
 
 	private:
 		Skeleton					m_skeleton;									//スケルトン
@@ -217,6 +250,7 @@ namespace nsK2EngineLow
 		Vector3						m_scale = Vector3::One;						//大きさ
 		Quaternion					m_rotation = Quaternion::Identity;			//回転
 		Model						m_forwardRenderModel;						//フォワードレンダリングで描画されるモデル
+		Model						m_translucentModel;							//半透明モデル
 		Model						m_renderToGBufferModel;						//RenderToGBufferで描画されるモデル
 	};
 }

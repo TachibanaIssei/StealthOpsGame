@@ -13,13 +13,18 @@ namespace nsK2EngineLow
 	{
 		InitMainRenderTarget();
 		InitGBuffer();
+		InitDeferredLighting();
 		Init2DRenderTarget();
 		InitCopyMainRenderTargetToFrameBufferSprite();
 	}
 	void RenderingEngine::Execute(RenderContext& rc)
 	{
+		// シーンライトのデータをコピー。
+		m_deferredLightingCB.m_light = m_sceneLight.GetSceneLight();
+
 		//モデルを描画
 		RenderToGBuffer(rc);
+		DeferredLighting(rc);
 		FowardRendering(rc);
 		Render2D(rc);
 		CopyMainRenderTargetToFrameBuffer(rc);
@@ -62,6 +67,36 @@ namespace nsK2EngineLow
 			DXGI_FORMAT_R8G8B8A8_UNORM,
 			DXGI_FORMAT_UNKNOWN
 		);
+	}
+	void RenderingEngine::InitDeferredLighting()
+	{
+		m_sceneLight.Init();
+		InitDeferredLightingSprite();
+	}
+	void RenderingEngine::InitDeferredLightingSprite()
+	{
+		SpriteInitData spriteInitData;
+
+		// 画面全体にレンダリングするので幅と高さはフレームバッファーの幅と高さと同じ
+		spriteInitData.m_width = g_graphicsEngine->GetFrameBufferWidth();
+		spriteInitData.m_height = g_graphicsEngine->GetFrameBufferHeight();
+
+		// ディファードライティングで使用するテクスチャを設定
+		int texNo = 0;
+		for (auto& gBuffer : m_gBuffer)
+		{
+			spriteInitData.m_textures[texNo++] = &gBuffer.GetRenderTargetTexture();
+		}
+		spriteInitData.m_fxFilePath = "Assets/shader/DeferredLighting.fx";
+		//影を追加したらここも分岐するようになるかもソフトシャドウとハードシャドウで
+		spriteInitData.m_psEntryPoinFunc = "PSMainSoftShadow";
+
+		//ライトの情報を定数バッファに渡す
+		spriteInitData.m_expandConstantBuffer = &m_deferredLightingCB;
+		spriteInitData.m_expandConstantBufferSize = sizeof(m_deferredLightingCB);
+
+		spriteInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		m_diferredLightingSprite.Init(spriteInitData);
 	}
 	void RenderingEngine::InitMainRenderTarget()
 	{
@@ -154,16 +189,41 @@ namespace nsK2EngineLow
 		rc.WaitUntilFinishDrawingToRenderTargets(ARRAYSIZE(rts), rts);
 		EndGPUEvent();
 	}
+	void RenderingEngine::DeferredLighting(RenderContext& rc)
+	{
+		BeginGPUEvent("DeferredLighting");
+
+		// ディファードライティングに必要なライト情報を更新する
+		m_deferredLightingCB.m_light.eyePos = g_camera3D->GetPosition();
+		m_deferredLightingCB.m_light.mViewProjInv.Inverse(g_camera3D->GetViewProjectionMatrix());
+
+		rc.WaitUntilToPossibleSetRenderTarget(m_mainRenderTarget);
+		rc.SetRenderTargetAndViewport(m_mainRenderTarget);
+
+		// G-Bufferの内容を元にしてディファードライティング
+		m_diferredLightingSprite.Draw(rc);
+
+		rc.WaitUntilFinishDrawingToRenderTarget(m_mainRenderTarget);
+
+		EndGPUEvent();
+	}
 	void RenderingEngine::FowardRendering(RenderContext& rc)
 	{
 		BeginGPUEvent("FowardRendering");
 
 		rc.WaitUntilToPossibleSetRenderTarget(m_mainRenderTarget);
-		rc.SetRenderTargetAndViewport(m_mainRenderTarget);
-		rc.ClearRenderTargetView(m_mainRenderTarget);
+		rc.SetRenderTarget(
+			m_mainRenderTarget.GetRTVCpuDescriptorHandle(),
+			m_gBuffer[enGBufferAlbedoDepth].GetDSVCpuDescriptorHandle()
+		);
 
 		for (auto& renderObj : m_renderObjects) {
 			renderObj->OnForwardRender(rc);
+		}
+
+		//半透明オブジェクトの描画
+		for (auto& renderObj : m_renderObjects) {
+			renderObj->OnTlanslucentRender(rc);
 		}
 
 		//レンダリングターゲットへの書き込み終了待ち
