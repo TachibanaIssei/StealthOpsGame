@@ -18,6 +18,11 @@ namespace nsK2EngineLow
 		DXGI_FORMAT colorBufferFormat;	// カラーバッファのフォーマット。
 		DXGI_FORMAT depthBufferFormat;	// 深度バッファのフォーマット。
 	};
+	// ハードシャドウ用のシャドウマップのフォーマット。
+	const RenderTargetFormat g_hardShadowMapFormat = {
+		DXGI_FORMAT_R32_FLOAT,
+		DXGI_FORMAT_D32_FLOAT
+	};
 	// メインレンダリングターゲットのフォーマット。
 	const RenderTargetFormat g_mainRenderTargetFormat = {
 		DXGI_FORMAT_R32G32B32A32_FLOAT,

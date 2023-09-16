@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "CascadeShadowMapMatrix.h"
 
@@ -9,18 +9,18 @@ namespace nsK2EngineLow
 	{
 	public:
 		/// <summary>
-		/// ‰Šú‰»
+		/// åˆæœŸåŒ–
 		/// </summary>
 		void Init();
 		/// <summary>
-		/// •`‰æ
+		/// æç”»
 		/// </summary>
-		/// <param name="rc">ƒŒƒ“ƒ_ƒŠƒ“ƒOƒRƒ“ƒeƒLƒXƒg</param>
-		/// <param name="ligNo">ƒ‰ƒCƒg”Ô†</param>
-		/// <param name="lightDirection">ƒ‰ƒCƒg‚Ì•ûŒü</param>
-		/// <param name="renderObjects">•`‰æƒIƒuƒWƒFƒNƒg</param>
-		/// <param name="sceneMaxPosition">ƒQ[ƒ€ƒV[ƒ“‚ÌÅ‘åÀ•W</param>
-		/// <param name="sceneMinPosition">ƒQ[ƒ€ƒV[ƒ“‚ÌÅ¬À•W</param>
+		/// <param name="rc">ãƒ¬ãƒ³ãƒ€ãƒªãƒ³ã‚°ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ</param>
+		/// <param name="ligNo">ãƒ©ã‚¤ãƒˆç•ªå·</param>
+		/// <param name="lightDirection">ãƒ©ã‚¤ãƒˆã®æ–¹å‘</param>
+		/// <param name="renderObjects">æç”»ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ</param>
+		/// <param name="sceneMaxPosition">ã‚²ãƒ¼ãƒ ã‚·ãƒ¼ãƒ³ã®æœ€å¤§åº§æ¨™</param>
+		/// <param name="sceneMinPosition">ã‚²ãƒ¼ãƒ ã‚·ãƒ¼ãƒ³ã®æœ€å°åº§æ¨™</param>
 		void Render(
 			RenderContext& rc,
 			int ligNo,
@@ -29,9 +29,8 @@ namespace nsK2EngineLow
 		);
 
 	private:
-		CascadeShadowMapMatrix m_cascadeShadowMapMatrix;						//ƒJƒXƒP[ƒhƒVƒƒƒhƒEƒ}ƒbƒv‚Ìs—ñ‚ğˆµ‚¤ƒIƒuƒWƒFƒNƒg
-		RenderTarget m_shadowMaps[NUM_SHADOW_MAP];								//ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg
-		std::vector<IRenderer*> m_renderers;									//ƒVƒƒƒhƒEƒ}ƒbƒv‚Ö‚ÌƒŒƒ“ƒ_ƒ‰[‚Ì”z—ñ
-		float m_cascadeAreaRateArray[NUM_SHADOW_MAP] = { 0.05f, 0.3f,1.0f };	//ƒJƒXƒP[ƒhƒVƒƒƒhƒE‚Ì‹ß`‰“‹——£‚Ì”ä—¦
+		CascadeShadowMapMatrix m_cascadeShadowMapMatrix;						//ã‚«ã‚¹ã‚±ãƒ¼ãƒ‰ã‚·ãƒ£ãƒ‰ã‚¦ãƒãƒƒãƒ—ã®è¡Œåˆ—ã‚’æ‰±ã†ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+		RenderTarget m_shadowMaps[NUM_SHADOW_MAP];								//ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆ
+		float m_cascadeAreaRateArray[NUM_SHADOW_MAP] = { 0.05f, 0.3f,1.0f };	//ã‚«ã‚¹ã‚±ãƒ¼ãƒ‰ã‚·ãƒ£ãƒ‰ã‚¦ã®è¿‘ï½é è·é›¢ã®æ¯”ç‡
 	};
 }
