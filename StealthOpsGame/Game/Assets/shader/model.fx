@@ -83,6 +83,7 @@ float4 PSMainCore( SPSIn In, uniform int isSoftShadow)
     float4 albedoColor = albedoTexture.Sample(Sampler, In.uv);
     //法線をサンプリング。
     float3 normal = normalTexture.Sample(Sampler, In.uv).xyz;
+    // float3 normal =  In.normal;
     //ワールド座標をサンプリング。
     float3 worldPos = In.worldPos;
     //スペキュラカラーをサンプリング。
