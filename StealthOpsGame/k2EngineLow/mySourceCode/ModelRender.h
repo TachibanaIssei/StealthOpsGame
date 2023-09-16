@@ -216,6 +216,17 @@ namespace nsK2EngineLow
 			const EnModelUpAxis enModelUpAxis
 		);
 		/// <summary>
+		/// シャドウマップ描画用の初期化
+		/// </summary>
+		/// <param name="tkmFilePath">tkmファイルパス</param>
+		/// <param name="modelUpAxis">モデルの上方向</param>
+		/// <param name="isFrontCullingOnDrawShadowMap">フロントカリングを行う？</param>
+		void InitModelOnShadowMap(
+			const char* tkmFilePath,
+			EnModelUpAxis modelUpAxis,
+			bool isFrontCullingOnDrawShadowMap
+		);
+		/// <summary>
 		/// GBuffer描画用のモデルを初期化
 		/// </summary>
 		/// <param name="tkmFilePath">tkmファイルパス</param>

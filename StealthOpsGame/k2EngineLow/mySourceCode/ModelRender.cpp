@@ -149,6 +149,29 @@ namespace nsK2EngineLow
 		m_translucentModel.Init(modelInitData);
 	}
 
+	void ModelRender::InitModelOnShadowMap(const char* tkmFilePath, EnModelUpAxis modelUpAxis, bool isFrontCullingOnDrawShadowMap)
+	{
+		ModelInitData modelInitData;
+		modelInitData.m_tkmFilePath = tkmFilePath;
+		modelInitData.m_modelUpAxis = modelUpAxis;
+		if (isFrontCullingOnDrawShadowMap)
+		{
+			//表カリングを行う
+			modelInitData.m_cullMode = D3D12_CULL_MODE_FRONT;
+		}
+		SetupVertexShaderEntryPointFunc(modelInitData);
+
+		if (m_animationClips != nullptr)
+		{
+			modelInitData.m_skeleton = &m_skeleton;
+		}
+		modelInitData.m_fxFilePath = "Assets/shader/preProcess/DrawShadowMap.fx";
+
+		modelInitData.m_colorBufferFormat[0] = g_hardShadowMapFormat.colorBufferFormat;
+
+		for(int ligNo = 0; ligNo < NUM_SHADOW_LIGHT; )
+	}
+
 	void ModelRender::InitModelOnRenderGBuffer(
 		const char* tkmFilePath,
 		const EnModelUpAxis enModelUpAxis)
