@@ -9,10 +9,13 @@ namespace nsK2EngineLow
 	RenderingEngine::~RenderingEngine()
 	{
 	}
-	void RenderingEngine::Init()
+	void RenderingEngine::Init(const bool isSoftShadow)
 	{
+		m_isSoftShadow = isSoftShadow;
+
 		InitMainRenderTarget();
 		InitGBuffer();
+		InitShadowMapRender();
 		InitDeferredLighting();
 		Init2DRenderTarget();
 		InitCopyMainRenderTargetToFrameBufferSprite();

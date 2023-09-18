@@ -24,7 +24,7 @@ namespace nsK2EngineLow
 		/// <summary>
 		/// 初期化処理
 		/// </summary>
-		void Init();
+		void Init(const bool isSoftShadow);
 		/// <summary>
 		/// 描画オブジェクトを追加。
 		/// </summary>
