@@ -73,6 +73,19 @@ float4 CalcVertexPositionInWorldSpace(float4 vertexPos, float4x4 mWorld)
 }
 
 /// <summary>
+//  法線マップから法線を取得
+/// </summary>
+float3 GetNormalFromNormalMap(Texture2D<float4> normalMap, sampler Sampler,float3 normal, float3 tangent, float3 biNormal, float2 uv)
+{
+    float3 binSpaceNormal = normalMap.SampleLevel (Sampler, uv, 0.0f).xyz;
+    binSpaceNormal = (binSpaceNormal * 2.0f) - 1.0f;
+
+    float3 newNormal = tangent * binSpaceNormal.x + biNormal * binSpaceNormal.y + normal * binSpaceNormal.z;
+    
+    return newNormal;
+}
+
+/// <summary>
 /// スキンなしメッシュ用の頂点シェーダーのエントリー関数。
 /// </summary>
 SPSIn VSMain(SVSIn vsIn)

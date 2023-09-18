@@ -42,16 +42,7 @@ sampler g_sampler : register(s0);
 // 関数
 ///////////////////////////////////////
 
-// 法線マップから法線を取得
-float3 GetNormalFromNormalMap(float3 normal, float3 tangent, float3 biNormal, float2 uv)
-{
-    float3 binSpaceNormal = g_normal.SampleLevel (g_sampler, uv, 0.0f).xyz;
-    binSpaceNormal = (binSpaceNormal * 2.0f) - 1.0f;
 
-    float3 newNormal = tangent * binSpaceNormal.x + biNormal * binSpaceNormal.y + normal * binSpaceNormal.z;
-    
-    return newNormal;
-}
 
 // モデル用の頂点シェーダーのエントリーポイント
 SPSIn VSMainCore(SVSIn vsIn, float4x4 mWorldLocal)
@@ -89,7 +80,7 @@ SPSOut PSMainCore( SPSIn psIn, int isShadowReciever)
     psOut.albedo.w = psIn.pos.z;
     // 法線を出力
     psOut.normal.xyz = GetNormalFromNormalMap( 
-        psIn.normal, psIn.tangent, psIn.biNormal, psIn.uv ) ;
+        g_normal, g_sampler, psIn.normal, psIn.tangent, psIn.biNormal, psIn.uv ) ;
     psOut.normal.w = 1.0f;
     // メタリックスムースを出力。
     psOut.metaricShadowSmooth = g_spacular.Sample(g_sampler, psIn.uv);
