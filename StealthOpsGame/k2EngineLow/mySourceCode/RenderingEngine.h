@@ -40,17 +40,26 @@ namespace nsK2EngineLow
 		/// <summary>
 		/// ディレクションライトのパラメータを設定
 		/// </summary>
-		/// <param name="lightNo"></param>
-		/// <param name="direction"></param>
-		/// <param name="color"></param>
+		/// <param name="lightNo">ライト番号</param>
+		/// <param name="direction">ライト方向</param>
+		/// <param name="color">ライトの色</param>
 		void SetDirectionLight(const int lightNo, const Vector3 direction, const Vector3 color)
 		{
 			m_sceneLight.SetDirectionLight(lightNo, direction, color);
 		}
 		/// <summary>
+		/// キャストシャドウフラグを取得
+		/// </summary>
+		/// <param name="lightNo">ライト番号</param>
+		/// <returns>trueだったら影を落とす</returns>
+		void SetDirectionLightCastShadow(const int lightNo, const bool flag)
+		{
+			m_sceneLight.SetDirectionLightCastShadow(lightNo, flag);
+		}
+		/// <summary>
 		/// 環境光を設定。
 		/// </summary>
-		/// <param name="ambient"></param>
+		/// <param name="ambient">環境光の色</param>
 		void SetAmbient(const Vector3 ambient)
 		{
 			m_sceneLight.SetAmbient(ambient);
@@ -89,6 +98,10 @@ namespace nsK2EngineLow
 
 	private:
 		/// <summary>
+		/// ZPrepassレンダーターゲットを初期化
+		/// </summary>
+		void InitZPrepassRenderTarget();
+		/// <summary>
 		/// シャドウマップレンダーを初期化
 		/// </summary>
 		void InitShadowMapRender();
@@ -116,6 +129,11 @@ namespace nsK2EngineLow
 		/// メインレンダリングターゲットのカラーバッファの内容をフレームバッファにコピーするスプライトを初期化する
 		/// </summary>
 		void InitCopyMainRenderTargetToFrameBufferSprite();
+		/// <summary>
+		/// ZPrepassへの描画
+		/// </summary>
+		/// <param name="rc"></param>
+		void RenderToZPrepass(RenderContext& rc);
 		/// <summary>
 		/// シャドウマップへの描画
 		/// </summary>
@@ -161,6 +179,7 @@ namespace nsK2EngineLow
 		SDeferredLightingCB			m_deferredLightingCB;							// ディファードライティング用の定数バッファ
 		SceneLight					m_sceneLight;									// シーンライト
 		ShadowMapRender				m_shadowMapRenders[MAX_DIRECTIONAL_LIGHT];		//シャドウマップへの描画処理
+		RenderTarget				m_zPrepassRenderTarget;							//ZPrepass描画用のレンダリングターゲット
 		RenderTarget				m_mainRenderTarget;								//メインレンダーターゲット
 		RenderTarget				m_2DRenderTarget;								//2D描画用のレンダーターゲット
 		RenderTarget				m_gBuffer[enGBufferNum];						//G-Bufferレンダーターゲット配列

@@ -22,6 +22,14 @@ namespace nsK2EngineLow {
 
 		}
 		/// <summary>
+		/// ZPrepassから呼ばれる処理
+		/// </summary>
+		/// <param name="rc"></param>
+		virtual void OnZPrepass(RenderContext& rc)
+		{
+
+		}
+		/// <summary>
 		/// フォワードレンダーパスから呼ばれる処理
 		/// </summary>
 		/// <param name="rc"></param>

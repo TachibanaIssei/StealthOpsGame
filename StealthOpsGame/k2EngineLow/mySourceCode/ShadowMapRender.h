@@ -11,7 +11,7 @@ namespace nsK2EngineLow
 		/// <summary>
 		/// 初期化
 		/// </summary>
-		void Init();
+		void Init(const bool isSoftShadow);
 		/// <summary>
 		/// 描画
 		/// </summary>
@@ -45,8 +45,9 @@ namespace nsK2EngineLow
 		}
 
 	private:
-		CascadeShadowMapMatrix m_cascadeShadowMapMatrix;						//カスケードシャドウマップの行列を扱うオブジェクト
-		RenderTarget m_shadowMaps[NUM_SHADOW_MAP];								//レンダーターゲット
-		float m_cascadeAreaRateArray[NUM_SHADOW_MAP] = { 0.05f, 0.3f,1.0f };	//カスケードシャドウの近～遠距離の比率
+		CascadeShadowMapMatrix		m_cascadeShadowMapMatrix;										//カスケードシャドウマップの行列を扱うオブジェクト
+		RenderTarget				m_shadowMaps[NUM_SHADOW_MAP];									//レンダーターゲット
+		float						m_cascadeAreaRateArray[NUM_SHADOW_MAP] = { 0.05f, 0.3f,1.0f };	//カスケードシャドウの近～遠距離の比率
+		bool						m_isSoftShadow = false;											//ソフトシャドウを行う？
 	};
 }

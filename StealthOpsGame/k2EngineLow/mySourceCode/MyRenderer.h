@@ -23,6 +23,11 @@ namespace nsK2EngineLow
 		DXGI_FORMAT_R32_FLOAT,
 		DXGI_FORMAT_D32_FLOAT
 	};
+	//ソフトシャドウ用のシャドウマップのフォーマット
+	const RenderTargetFormat g_softShadowMapFormat = {
+		DXGI_FORMAT_R32G32_FLOAT,
+		DXGI_FORMAT_D32_FLOAT
+	};
 	// メインレンダリングターゲットのフォーマット。
 	const RenderTargetFormat g_mainRenderTargetFormat = {
 		DXGI_FORMAT_R32G32B32A32_FLOAT,

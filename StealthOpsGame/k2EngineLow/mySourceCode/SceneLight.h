@@ -47,15 +47,39 @@ namespace nsK2EngineLow
 		{
 			return m_light;
 		}
+		/// <summary>
+		/// ディレクションライトを設定する
+		/// </summary>
+		/// <param name="lightNo">ライト番号</param>
+		/// <param name="direction">ライトの方向</param>
+		/// <param name="color">ライトの色</param>
 		void SetDirectionLight(const int lightNo, const Vector3 direction, const Vector4 color)
 		{
 			m_light.directionalLight[lightNo].direction = direction;
 			m_light.directionalLight[lightNo].color		= color;
 		}
-		bool IsCastShadow(const int lightNo)
+		/// <summary>
+		/// ディレクションライトのキャストシャドウフラグを設定
+		/// </summary>
+		/// <param name="lightNo">ライト番号</param>
+		/// <param name="flag"></param>
+		void SetDirectionLightCastShadow(const int lightNo,const bool flag)
+		{
+			m_light.directionalLight[lightNo].castShadow = flag;
+		}
+		/// <summary>
+		/// キャストシャドウフラグを取得
+		/// </summary>
+		/// <param name="lightNo">ライト番号</param>
+		/// <returns>trueだったら影を落とす</returns>
+		const bool IsCastShadow(const int lightNo) const
 		{
 			return m_light.directionalLight[lightNo].castShadow;
 		}
+		/// <summary>
+		/// 環境光を設定する
+		/// </summary>
+		/// <param name="ambient"></param>
 		void SetAmbient(const Vector3 ambient)
 		{
 			m_light.ambientLight = ambient;

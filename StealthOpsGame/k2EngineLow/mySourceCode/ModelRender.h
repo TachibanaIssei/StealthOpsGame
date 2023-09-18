@@ -222,6 +222,15 @@ namespace nsK2EngineLow
 			const EnModelUpAxis enModelUpAxis
 		);
 		/// <summary>
+		/// ZPrepass描画用のモデルの初期化
+		/// </summary>
+		/// <param name="tkmFilePath">tkmファイルパス</param>
+		/// <param name="modelUpAxis">モデルの上方向</param>
+		void InitModelOnZPrepass(
+			const char* tkmFilePath,
+			const EnModelUpAxis modelUpAxis
+		);
+		/// <summary>
 		/// シャドウマップ描画用の初期化
 		/// </summary>
 		/// <param name="tkmFilePath">tkmファイルパス</param>
@@ -242,6 +251,11 @@ namespace nsK2EngineLow
 			const EnModelUpAxis enModelUpAxis,
 			const bool isShadowReciever
 		);
+		/// <summary>
+		/// ZPrepass描画パスから呼ばれる処理
+		/// </summary>
+		/// <param name="rc"></param>
+		void OnZPrepass(RenderContext& rc) override;
 		/// <summary>
 		/// GBuffer描画パスから呼ばれる処理
 		/// </summary>
@@ -275,6 +289,7 @@ namespace nsK2EngineLow
 		Vector3						m_position = Vector3::Zero;								//座標
 		Vector3						m_scale = Vector3::One;									//大きさ
 		Quaternion					m_rotation = Quaternion::Identity;						//回転
+		Model						m_zPrepassModel;										//ZPrepassで描画されるモデル
 		Model						m_forwardRenderModel;									//フォワードレンダリングで描画されるモデル
 		Model						m_translucentModel;										//半透明モデル
 		Model						m_renderToGBufferModel;									//RenderToGBufferで描画されるモデル

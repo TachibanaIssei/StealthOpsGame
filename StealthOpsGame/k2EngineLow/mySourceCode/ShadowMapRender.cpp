@@ -3,19 +3,28 @@
 
 namespace nsK2EngineLow
 {
-	void ShadowMapRender::Init()
+	void ShadowMapRender::Init(const bool isSoftShadow)
 	{
 		float clearColor[4] = { 1.0f,1.0f,1.0f,1.0f };
 
 		DXGI_FORMAT colorFormat;
 		DXGI_FORMAT depthFormat;
-		colorFormat = g_hardShadowMapFormat.colorBufferFormat;
-		depthFormat = g_hardShadowMapFormat.depthBufferFormat;
+
+		if (isSoftShadow)
+		{
+			colorFormat = g_softShadowMapFormat.colorBufferFormat;
+			depthFormat = g_softShadowMapFormat.depthBufferFormat;
+		}
+		else
+		{
+			colorFormat = g_hardShadowMapFormat.colorBufferFormat;
+			depthFormat = g_hardShadowMapFormat.depthBufferFormat;
+		}
 
 		//近景用のシャドウマップ
 		m_shadowMaps[SHADOW_MAP_AREA_NEAR].Create(
-			2048,
-			2048,
+			4096,
+			4096,
 			1,
 			1,
 			colorFormat,
@@ -23,8 +32,8 @@ namespace nsK2EngineLow
 		);
 		//中景用のシャドウマップ
 		m_shadowMaps[SHADOW_MAP_AREA_MIDDLE].Create(
-			1024,
-			1024,
+			2048,
+			2048,
 			1,
 			1,
 			colorFormat,
@@ -32,13 +41,19 @@ namespace nsK2EngineLow
 		);
 		//遠景用のシャドウマップ
 		m_shadowMaps[SHADOW_MAP_AREA_FAR].Create(
-			512,
-			512,
+			1024,
+			1024,
 			1,
 			1,
 			colorFormat,
 			depthFormat
 		);
+
+		if (isSoftShadow)
+		{
+			//ガウシアンブラーをここで初期化する
+		}
+		m_isSoftShadow = isSoftShadow;
 	}
 	void ShadowMapRender::Render(
 		RenderContext& rc, 

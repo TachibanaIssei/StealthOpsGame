@@ -13,12 +13,13 @@ namespace nsK2EngineLow
 	{
 		m_isSoftShadow = isSoftShadow;
 
+		InitZPrepassRenderTarget();
 		InitMainRenderTarget();
 		InitGBuffer();
+		InitCopyMainRenderTargetToFrameBufferSprite();
 		InitShadowMapRender();
 		InitDeferredLighting();
 		Init2DRenderTarget();
-		InitCopyMainRenderTargetToFrameBufferSprite();
 	}
 	void RenderingEngine::Execute(RenderContext& rc)
 	{
@@ -27,6 +28,7 @@ namespace nsK2EngineLow
 
 		//モデルを描画
 		RenderToShadowMap(rc);
+		RenderToZPrepass(rc);
 		RenderToGBuffer(rc);
 		DeferredLighting(rc);
 		FowardRendering(rc);
@@ -35,11 +37,22 @@ namespace nsK2EngineLow
 
 		m_renderObjects.clear();
 	}
+	void RenderingEngine::InitZPrepassRenderTarget()
+	{
+		m_zPrepassRenderTarget.Create(
+			g_graphicsEngine->GetFrameBufferWidth(),
+			g_graphicsEngine->GetFrameBufferHeight(),
+			1,
+			1,
+			DXGI_FORMAT_R32G32_FLOAT,
+			DXGI_FORMAT_D32_FLOAT
+		);
+	}
 	void RenderingEngine::InitShadowMapRender()
 	{
 		for (auto& ShadowMapRender : m_shadowMapRenders)
 		{
-			ShadowMapRender.Init();
+			ShadowMapRender.Init(m_isSoftShadow);
 		}
 	}
 	void RenderingEngine::InitGBuffer()
@@ -187,6 +200,21 @@ namespace nsK2EngineLow
 
 		//初期化オブジェクトを使って、スプライトを初期化する
 		m_copyToFrameBufferSprite.Init(spriteInitData);
+	}
+	void RenderingEngine::RenderToZPrepass(RenderContext& rc)
+	{
+		BeginGPUEvent("ZPrepass");
+
+		rc.WaitUntilToPossibleSetRenderTarget(m_zPrepassRenderTarget);
+		rc.SetRenderTargetAndViewport(m_zPrepassRenderTarget);
+
+		for (auto& model : m_renderObjects)
+		{
+			model->OnZPrepass(rc);
+		}
+
+		rc.WaitUntilFinishDrawingToRenderTarget(m_zPrepassRenderTarget);
+		EndGPUEvent();
 	}
 	void RenderingEngine::RenderToShadowMap(RenderContext& rc)
 	{
