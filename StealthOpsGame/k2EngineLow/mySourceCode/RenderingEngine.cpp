@@ -23,6 +23,7 @@ namespace nsK2EngineLow
 		m_deferredLightingCB.m_light = m_sceneLight.GetSceneLight();
 
 		//モデルを描画
+		RenderToShadowMap(rc);
 		RenderToGBuffer(rc);
 		DeferredLighting(rc);
 		FowardRendering(rc);
@@ -30,6 +31,13 @@ namespace nsK2EngineLow
 		CopyMainRenderTargetToFrameBuffer(rc);
 
 		m_renderObjects.clear();
+	}
+	void RenderingEngine::InitShadowMapRender()
+	{
+		for (auto& ShadowMapRender : m_shadowMapRenders)
+		{
+			ShadowMapRender.Init();
+		}
 	}
 	void RenderingEngine::InitGBuffer()
 	{
@@ -88,12 +96,27 @@ namespace nsK2EngineLow
 			spriteInitData.m_textures[texNo++] = &gBuffer.GetRenderTargetTexture();
 		}
 		spriteInitData.m_fxFilePath = "Assets/shader/DeferredLighting.fx";
-		//影を追加したらここも分岐するようになるかもソフトシャドウとハードシャドウで
-		spriteInitData.m_psEntryPoinFunc = "PSMainSoftShadow";
+		
+		if (m_isSoftShadow)
+		{
+			spriteInitData.m_psEntryPoinFunc = "PSMainSoftShadow";
+		}
+		else
+		{
+			spriteInitData.m_psEntryPoinFunc = "PSMainHardShadow";
+		}
 
 		//ライトの情報を定数バッファに渡す
 		spriteInitData.m_expandConstantBuffer = &m_deferredLightingCB;
 		spriteInitData.m_expandConstantBufferSize = sizeof(m_deferredLightingCB);
+
+		for (int i = 0; i < MAX_DIRECTIONAL_LIGHT; i++)
+		{
+			for (int areaNo = 0; areaNo < NUM_SHADOW_MAP; areaNo++)
+			{
+				spriteInitData.m_textures[texNo++] = &m_shadowMapRenders[i].GetShadowMap(areaNo);
+			}
+		}
 
 		spriteInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		m_diferredLightingSprite.Init(spriteInitData);
@@ -162,6 +185,25 @@ namespace nsK2EngineLow
 		//初期化オブジェクトを使って、スプライトを初期化する
 		m_copyToFrameBufferSprite.Init(spriteInitData);
 	}
+	void RenderingEngine::RenderToShadowMap(RenderContext& rc)
+	{
+		BeginGPUEvent("RenderToShadowMap");
+		int ligNo = 0;
+		for (auto& shadowMapRender : m_shadowMapRenders)
+		{
+			if (m_sceneLight.IsCastShadow(ligNo))
+			{
+				shadowMapRender.Render(
+					rc,
+					ligNo,
+					m_deferredLightingCB.m_light.directionalLight[ligNo].direction,
+					m_renderObjects
+				);
+			}
+			ligNo++;
+		}
+		EndGPUEvent();
+	}
 	void RenderingEngine::RenderToGBuffer(RenderContext& rc)
 	{
 		BeginGPUEvent("RenderToGBuffer");
@@ -195,6 +237,13 @@ namespace nsK2EngineLow
 
 		// ディファードライティングに必要なライト情報を更新する
 		m_deferredLightingCB.m_light.eyePos = g_camera3D->GetPosition();
+		for (int i = 0; i < MAX_DIRECTIONAL_LIGHT; i++)
+		{
+			for (int areaNo = 0; areaNo < NUM_SHADOW_MAP; areaNo++)
+			{
+				m_deferredLightingCB.mlvp[i][areaNo] = m_shadowMapRenders[i].GetLVPMatrix(areaNo);
+			}
+		}
 		m_deferredLightingCB.m_light.mViewProjInv.Inverse(g_camera3D->GetViewProjectionMatrix());
 
 		rc.WaitUntilToPossibleSetRenderTarget(m_mainRenderTarget);

@@ -18,7 +18,7 @@ namespace nsK2EngineLow
 	/// </summary>
 	struct Light
 	{
-		DirectionalLight directionalLight[MAX_DIRECTIONAL_LIGHT];	//ディレクショナルライトの配列
+		std::array<DirectionalLight, MAX_DIRECTIONAL_LIGHT> directionalLight;	//ディレクショナルライトの配列
 		Matrix mViewProjInv;	//ビュープロジェクション行列の逆行列
 		Vector3 eyePos;			//カメラの位置
 		float pad0;				//パディング0

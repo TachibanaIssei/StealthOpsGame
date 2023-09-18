@@ -14,8 +14,8 @@ namespace nsK2EngineLow {
 		/// <param name="lvpMatrix">ライトビュープロジェクション行列</param>
 		virtual void OnRenderShadowMap(
 			RenderContext& rc,
-			int ligNo,
-			int shadowMapNo,
+			const int ligNo,
+			const int shadowMapNo,
 			const Matrix& lvpMatrix
 		)
 		{

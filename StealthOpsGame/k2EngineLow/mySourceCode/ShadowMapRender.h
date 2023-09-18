@@ -19,14 +19,30 @@ namespace nsK2EngineLow
 		/// <param name="ligNo">ライト番号</param>
 		/// <param name="lightDirection">ライトの方向</param>
 		/// <param name="renderObjects">描画オブジェクト</param>
-		/// <param name="sceneMaxPosition">ゲームシーンの最大座標</param>
-		/// <param name="sceneMinPosition">ゲームシーンの最小座標</param>
 		void Render(
 			RenderContext& rc,
 			int ligNo,
 			Vector3& lightDirection,
 			std::vector<IRenderer*>& renderObjects
 		);
+		/// <summary>
+		/// シャドウマップを取得
+		/// </summary>
+		/// <param name="areaNo">エリア番号</param>
+		/// <returns></returns>
+		Texture& GetShadowMap(const int areaNo)
+		{
+			return m_shadowMaps[areaNo].GetRenderTargetTexture();
+		}
+		/// <summary>
+		/// ライトビュープロジェクション行列を取得
+		/// </summary>
+		/// <param name="areaNo"></param>
+		/// <returns></returns>
+		const Matrix& GetLVPMatrix(const int areaNo) const
+		{
+			return m_cascadeShadowMapMatrix.GetLightViewProjectionCropMatrix(areaNo);
+		}
 
 	private:
 		CascadeShadowMapMatrix m_cascadeShadowMapMatrix;						//カスケードシャドウマップの行列を扱うオブジェクト
