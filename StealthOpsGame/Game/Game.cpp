@@ -12,6 +12,7 @@ Game::~Game()
 bool Game::Start()
 {
 	m_player = NewGO<Player>(0,"Player");
+	m_backGround = NewGO<BackGround>(0, "BackGround");
 	m_spriteRender.Init("Assets/sprite/attackUP.DDS", 256, 256);
 
 
@@ -21,15 +22,16 @@ bool Game::Start()
 
 	InitFontRender();
 
-	Vector3 dir = Vector3(1.0f, 0.0f, 0.0f);
+	Vector3 dir = Vector3(1.0f, -1.0f, 0.0f);
 	dir.Normalize();
 	Vector3 color = Vector3(5.0f, 0.0f, 0.0f);
 	g_renderingEngine->SetDirectionLight(0, dir, color);
-	Vector3 dir1 = Vector3(-1.0f, 0.0f, 0.0f);
+	Vector3 dir1 = Vector3(-1.0f, -1.0f, 0.0f);
 	dir1.Normalize();
 	Vector3 color1 = Vector3(0.0f, 5.0f, 5.0f);
 	g_renderingEngine->SetDirectionLight(1, dir1, color1);
 	g_renderingEngine->SetAmbient({ 0.5f,0.5f,0.5f });
+	g_renderingEngine->SetDirectionLightCastShadow(1, true);
 	InitSkyCube();
 
 	return true;
@@ -50,7 +52,7 @@ void Game::Update()
 
 void Game::Render(RenderContext& rc)
 {
-	m_spriteRender.Draw(rc);
+	//m_spriteRender.Draw(rc);
 	m_fontRender.Draw(rc);
 }
 
