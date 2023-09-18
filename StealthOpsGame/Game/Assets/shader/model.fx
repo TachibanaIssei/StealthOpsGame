@@ -54,10 +54,7 @@ SPSIn VSMainCore(SVSIn vsIn, float4x4 mWorldLocal)
     
     // 頂点座標をワールド座標系に変換する。
     psIn.pos = CalcVertexPositionInWorldSpace(vsIn.pos, mWorldLocal);
-
-    // 頂点シェーダーからワールド座標を出力
 	psIn.worldPos = psIn.pos;
-
 	psIn.pos = mul(mView, psIn.pos); // ワールド座標系からカメラ座標系に変換
 	psIn.pos = mul(mProj, psIn.pos); // カメラ座標系からスクリーン座標系に変換
     
@@ -96,7 +93,7 @@ float4 PSMainCore( SPSIn In, uniform int isSoftShadow)
     float smooth = metallicShadowSmoothTexture.SampleLevel(Sampler, In.uv, 0).a;
 
 	//影生成用のパラメータ
-    float shadowParam = metallicShadowSmoothTexture.Sample(Sampler, In.uv).g;
+    float shadowParam = 1.0f;
     
     //float2 viewportPos = In.pos.xy;
 
@@ -110,7 +107,12 @@ float4 PSMainCore( SPSIn In, uniform int isSoftShadow)
         float shadow = 0.0f;
         if( light.directionalLight[ligNo].castShadow == 1){
             //影を生成するなら。
-            shadow = CalcShadowRate( g_shadowMap, light.mlvp, ligNo, worldPos, isSoftShadow ) * shadowParam;
+            shadow = CalcShadowRate( 
+                g_shadowMap, 
+                light.mlvp, 
+                ligNo, 
+                worldPos, 
+                isSoftShadow ) * shadowParam;
         }
         
         lig += CalcLighting(
