@@ -36,7 +36,10 @@ struct SPSIn
 ///////////////////////////////////////
 #include "PBRLighting.h"
 
-#include "Sampler.h"
+///////////////////////////////////////
+// シャドウイング
+///////////////////////////////////////
+#include "Shadowing.h"
 
 ////////////////////////////////////////////////
 // 関数定義。
@@ -93,27 +96,26 @@ float4 PSMainCore( SPSIn In, uniform int isSoftShadow)
     float smooth = metallicShadowSmoothTexture.SampleLevel(Sampler, In.uv, 0).a;
 
 	//影生成用のパラメータ
-    float shadowParam = 1.0f;
+    float shadowParam = metallicShadowSmoothTexture.Sample(Sampler, In.uv).g;
     
-    float2 viewportPos = In.pos.xy;
+    //float2 viewportPos = In.pos.xy;
 
 	// 視線に向かって伸びるベクトルを計算する
     float3 toEye = normalize(light.eyePos - worldPos);
 
 	float3 lig = 0;
-    
     for(int ligNo = 0; ligNo < NUM_DIRECTIONAL_LIGHT; ligNo++)
     {
         // 影の落ち具合を計算する。
         float shadow = 0.0f;
-        // if( light.directionalLight[ligNo].castShadow == 1){
-        //     //影を生成するなら。
-        //     shadow = CalcShadowRate( g_shadowMap, light.mlvp, ligNo, worldPos, isSoftShadow ) * shadowParam;
-        // }
+        if( light.directionalLight[ligNo].castShadow == 1){
+            //影を生成するなら。
+            shadow = CalcShadowRate( g_shadowMap, light.mlvp, ligNo, worldPos, isSoftShadow ) * shadowParam;
+        }
         
         lig += CalcLighting(
             light.directionalLight[ligNo].direction,
-            light.directionalLight[ligNo].color,
+            light.directionalLight[ligNo].color.xyz,
             normal,
             toEye,
             albedoColor,
@@ -124,14 +126,20 @@ float4 PSMainCore( SPSIn In, uniform int isSoftShadow)
     }
 
 	// 環境光による底上げ
-    lig += light.ambientLight * albedoColor;
+    lig += light.ambientLight * albedoColor.xyz;
 
 	float4 finalColor = 1.0f;
     finalColor.xyz = lig;
     return float4(finalColor.xyz, albedoColor.a);
 }
 
+//ソフトシャドウを行うピクセルシェーダー
 float4 PSMainSoftShadow(SPSIn In) : SV_Target0
 {
     return PSMainCore( In, true);
 }
+//ハードシャドウを行うピクセルシェーダー。
+float4 PSMainHardShadow(SPSIn In) : SV_Target0
+{
+    return PSMainCore( In, false);
+} 
