@@ -43,6 +43,17 @@ struct SPSIn
 ////////////////////////////////////////////////
 
 /// <summary>
+/// タンジェントスペースの法線をワールドスペースの法線に変換して取得
+/// </summary>
+float3 GetNormal(float3 normal, float3 tangent, float3 biNormal, float2 uv)
+{
+	float3 binSpaceNormal = normalTexture.SampleLevel(Sampler,uv,0.0f).xyz;
+    binSpaceNormal = (binSpaceNormal * 2.0f) - 1.0f;
+    float3 newNormal = tangent * binSpaceNormal.x + biNormal * binSpaceNormal.y + normal * binSpaceNormal.z;
+    return newNormal;
+}
+
+/// <summary>
 /// 頂点シェーダーのコア関数。
 /// </summary>
 SPSIn VSMainCore(SVSIn vsIn, float4x4 mWorldLocal)
@@ -82,8 +93,7 @@ float4 PSMainCore( SPSIn In, uniform int isSoftShadow)
     //アルベドカラーをサンプリング。
     float4 albedoColor = albedoTexture.Sample(Sampler, In.uv);
     //法線をサンプリング。
-    float3 normal = normalTexture.Sample(Sampler, In.uv).xyz;
-    // float3 normal =  In.normal;
+    float3 normal = GetNormal(In.normal,In.tangent,In.biNormal,In.uv);
     //ワールド座標をサンプリング。
     float3 worldPos = In.worldPos;
     //スペキュラカラーをサンプリング。
