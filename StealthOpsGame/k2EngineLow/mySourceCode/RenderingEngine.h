@@ -3,6 +3,7 @@
 #include "MyRenderer.h"
 #include "SceneLight.h"
 #include "ShadowMapRender.h"
+#include "PostEffect/PostEffect.h"
 
 namespace nsK2EngineLow
 {
@@ -96,6 +97,16 @@ namespace nsK2EngineLow
 			return m_isSoftShadow;
 		}
 
+		/// <summary>
+		/// メインレンダリングターゲットのディスクリプタと
+		/// ZPrepassのデプスステンシルバッファでレンダリングターゲットを設定
+		/// </summary>
+		/// <param name="rc"></param>
+		void SetMainRenderTargetAndDepthStencilBuffer(RenderContext& rc)
+		{
+			rc.SetRenderTarget(m_mainRenderTarget.GetRTVCpuDescriptorHandle(), m_zPrepassRenderTarget.GetDSVCpuDescriptorHandle());
+		}
+
 	private:
 		/// <summary>
 		/// ZPrepassレンダーターゲットを初期化
@@ -179,6 +190,7 @@ namespace nsK2EngineLow
 		SDeferredLightingCB			m_deferredLightingCB;							// ディファードライティング用の定数バッファ
 		SceneLight					m_sceneLight;									// シーンライト
 		ShadowMapRender				m_shadowMapRenders[MAX_DIRECTIONAL_LIGHT];		//シャドウマップへの描画処理
+		PostEffect					m_postEffect;									//ポストエフェクト
 		RenderTarget				m_zPrepassRenderTarget;							//ZPrepass描画用のレンダリングターゲット
 		RenderTarget				m_mainRenderTarget;								//メインレンダーターゲット
 		RenderTarget				m_2DRenderTarget;								//2D描画用のレンダーターゲット

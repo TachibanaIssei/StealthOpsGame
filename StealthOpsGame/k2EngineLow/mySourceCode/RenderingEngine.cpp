@@ -20,6 +20,8 @@ namespace nsK2EngineLow
 		InitShadowMapRender();
 		InitDeferredLighting();
 		Init2DRenderTarget();
+
+		m_postEffect.Init(m_mainRenderTarget);
 	}
 	void RenderingEngine::Execute(RenderContext& rc)
 	{
@@ -32,6 +34,7 @@ namespace nsK2EngineLow
 		RenderToGBuffer(rc);
 		DeferredLighting(rc);
 		FowardRendering(rc);
+		m_postEffect.Render(rc, m_mainRenderTarget);
 		Render2D(rc);
 		CopyMainRenderTargetToFrameBuffer(rc);
 

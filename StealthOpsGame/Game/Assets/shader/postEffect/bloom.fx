@@ -37,6 +37,11 @@ sampler Sampler : register(s0);
 /////////////////////////////////////////////////////////
 // 輝度抽出用
 /////////////////////////////////////////////////////////
+cbuffer SamplingLuminanceCb : register(b1)
+{
+    float threshold;
+};
+
 /*!
  * @brief 輝度抽出用のピクセルシェーダー
  */
@@ -52,7 +57,7 @@ float4 PSSamplingLuminance(PSInput In) : SV_Target0
     // clip()関数は引数の値がマイナスになると、以降の処理をスキップする
     // なので、マイナスになるとピクセルカラーは出力されない
     // 今回の実装はカラーの明るさが1以下ならピクセルキルする
-    clip(t - 1.0f);
+    clip(t - threshold);
 
     return color;
 }

@@ -8,7 +8,7 @@ namespace nsK2EngineLow
 		const int BLUR_POWER = 10;	//ブラーの強さ
 	}
 
-	void Bloom::Init(RenderTarget& mainRenderTarget)
+	void Bloom::OnInit(RenderTarget& mainRenderTarget)
 	{
 		InitRenderTarget(mainRenderTarget);
 		InitLuminanceSprite(mainRenderTarget);
@@ -17,7 +17,7 @@ namespace nsK2EngineLow
 	}
 	void Bloom::OnRender(RenderContext& rc, RenderTarget& mainRenderTarget)
 	{
-		g_graphicsEngine->BeginGPUEvent("Bloom");
+		BeginGPUEvent("Bloom");
 
 		//輝度抽出用のレンダリングターゲットに変更
 		rc.WaitUntilToPossibleSetRenderTarget(m_luminnceRenderTarget);
@@ -46,7 +46,7 @@ namespace nsK2EngineLow
 		//レンダリングターゲットへの書き込み終了待ち
 		rc.WaitUntilFinishDrawingToRenderTarget(mainRenderTarget);
 
-		g_graphicsEngine->EndGPUEvent();
+		EndGPUEvent();
 	}
 	void Bloom::InitRenderTarget(const RenderTarget& mainRenderTarget)
 	{
@@ -66,6 +66,10 @@ namespace nsK2EngineLow
 		luminanceSpriteInitData.m_fxFilePath = "Assets/shader/postEffect/bloom.fx";
 		luminanceSpriteInitData.m_vsEntryPointFunc = "VSMain";
 		luminanceSpriteInitData.m_psEntryPoinFunc = "PSSamplingLuminance";
+
+		//定数バッファを設定
+		luminanceSpriteInitData.m_expandConstantBuffer = &m_samplingLuminanceCB;
+		luminanceSpriteInitData.m_expandConstantBufferSize = sizeof(m_samplingLuminanceCB);
 
 		//スプライトの幅と高さはluminnceRenderTargetと同じ
 		luminanceSpriteInitData.m_width = m_luminnceRenderTarget.GetWidth();

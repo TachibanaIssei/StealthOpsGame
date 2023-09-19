@@ -242,6 +242,8 @@
     <ClCompile Include="mySourceCode\SceneLight.cpp" />
     <ClCompile Include="mySourceCode\CascadeShadowMapMatrix.cpp" />
     <ClCompile Include="mySourceCode\ShadowMapRender.cpp" />
+    <ClCompile Include="mySourceCode\PostEffect\Bloom.cpp" />
+    <ClCompile Include="mySourceCode\PostEffect\PostEffect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="k2EngineLowPreCompile.h" />
@@ -536,6 +538,8 @@
     <ClInclude Include="mySourceCode\SceneLight.h" />
     <ClInclude Include="mySourceCode\CascadeShadowMapMatrix.h" />
     <ClInclude Include="mySourceCode\ShadowMapRender.h" />
+    <ClInclude Include="mySourceCode\PostEffect\Bloom.h" />
+    <ClInclude Include="mySourceCode\PostEffect\PostEffect.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="graphics">
