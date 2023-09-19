@@ -2,7 +2,7 @@
 
 #include "MyRenderer.h"
 #include "SceneLight.h"
-#include "ShadowMapRender.h"
+#include "Shadow/ShadowMapRender.h"
 #include "PostEffect/PostEffect.h"
 
 namespace nsK2EngineLow
@@ -105,6 +105,15 @@ namespace nsK2EngineLow
 		void SetMainRenderTargetAndDepthStencilBuffer(RenderContext& rc)
 		{
 			rc.SetRenderTarget(m_mainRenderTarget.GetRTVCpuDescriptorHandle(), m_zPrepassRenderTarget.GetDSVCpuDescriptorHandle());
+		}
+
+		/// <summary>
+		/// ブルーム発生するしきい値を設定
+		/// </summary>
+		/// <param name="thresHold">しきい値</param>
+		void SetBloomThreshold(const float thresHold)
+		{
+			m_postEffect.SetBloomThreshold(thresHold);
 		}
 
 	private:

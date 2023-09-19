@@ -355,7 +355,7 @@ namespace nsK2EngineLow
 		);
 
 		// ビューポートを指定する
-		D3D12_VIEWPORT viewport;
+		D3D12_VIEWPORT viewport{};
 		viewport.TopLeftX = 0;
 		viewport.TopLeftY = 0;
 		viewport.Width = static_cast<FLOAT>(g_graphicsEngine->GetFrameBufferWidth());

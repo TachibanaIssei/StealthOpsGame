@@ -240,8 +240,8 @@
     <ClCompile Include="mySourceCode\SkyCube.cpp" />
     <ClCompile Include="mySourceCode\FontRender.cpp" />
     <ClCompile Include="mySourceCode\SceneLight.cpp" />
-    <ClCompile Include="mySourceCode\CascadeShadowMapMatrix.cpp" />
-    <ClCompile Include="mySourceCode\ShadowMapRender.cpp" />
+    <ClCompile Include="mySourceCode\Shadow\CascadeShadowMapMatrix.cpp" />
+    <ClCompile Include="mySourceCode\Shadow\ShadowMapRender.cpp" />
     <ClCompile Include="mySourceCode\PostEffect\Bloom.cpp" />
     <ClCompile Include="mySourceCode\PostEffect\PostEffect.cpp" />
   </ItemGroup>
@@ -536,8 +536,8 @@
     <ClInclude Include="mySourceCode\SkyCube.h" />
     <ClInclude Include="mySourceCode\FontRender.h" />
     <ClInclude Include="mySourceCode\SceneLight.h" />
-    <ClInclude Include="mySourceCode\CascadeShadowMapMatrix.h" />
-    <ClInclude Include="mySourceCode\ShadowMapRender.h" />
+    <ClInclude Include="mySourceCode\Shadow\CascadeShadowMapMatrix.h" />
+    <ClInclude Include="mySourceCode\Shadow\ShadowMapRender.h" />
     <ClInclude Include="mySourceCode\PostEffect\Bloom.h" />
     <ClInclude Include="mySourceCode\PostEffect\PostEffect.h" />
   </ItemGroup>

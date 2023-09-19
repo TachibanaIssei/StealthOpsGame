@@ -21,6 +21,17 @@ namespace nsK2EngineLow
 		/// <param name="rc">レンダーコンテキスト</param>
 		/// <param name="mainRenderTarget">メインレンダーターゲット</param>
 		void Render(RenderContext& rc, RenderTarget& mainRenderTarget);
+
+	public:
+		/// <summary>
+		/// ブルーム発生するしきい値を設定
+		/// </summary>
+		/// <param name="thresHold">しきい値</param>
+		void SetBloomThreshold(const float thresHold)
+		{
+			m_bloom.SetThreshold(thresHold);
+		}
+
 	private:
 		Bloom m_bloom;
 	};
