@@ -9,13 +9,17 @@ namespace nsK2EngineLow
 	RenderingEngine::~RenderingEngine()
 	{
 	}
-	void RenderingEngine::Init()
+	void RenderingEngine::Init(const bool isSoftShadow)
 	{
+		m_isSoftShadow = isSoftShadow;
+
+		InitZPrepassRenderTarget();
 		InitMainRenderTarget();
 		InitGBuffer();
+		InitCopyMainRenderTargetToFrameBufferSprite();
+		InitShadowMapRender();
 		InitDeferredLighting();
 		Init2DRenderTarget();
-		InitCopyMainRenderTargetToFrameBufferSprite();
 	}
 	void RenderingEngine::Execute(RenderContext& rc)
 	{
@@ -23,6 +27,8 @@ namespace nsK2EngineLow
 		m_deferredLightingCB.m_light = m_sceneLight.GetSceneLight();
 
 		//モデルを描画
+		RenderToShadowMap(rc);
+		RenderToZPrepass(rc);
 		RenderToGBuffer(rc);
 		DeferredLighting(rc);
 		FowardRendering(rc);
@@ -30,6 +36,26 @@ namespace nsK2EngineLow
 		CopyMainRenderTargetToFrameBuffer(rc);
 
 		m_renderObjects.clear();
+	}
+	void RenderingEngine::InitZPrepassRenderTarget()
+	{
+		float clearColor[] = { 1.0f,1.0f,1.0f,1.0f };
+		m_zPrepassRenderTarget.Create(
+			g_graphicsEngine->GetFrameBufferWidth(),
+			g_graphicsEngine->GetFrameBufferHeight(),
+			1,
+			1,
+			g_zPrepassRenderTargetFormat.colorBufferFormat,
+			g_zPrepassRenderTargetFormat.depthBufferFormat,
+			clearColor
+		);
+	}
+	void RenderingEngine::InitShadowMapRender()
+	{
+		for (auto& ShadowMapRender : m_shadowMapRenders)
+		{
+			ShadowMapRender.Init(m_isSoftShadow);
+		}
 	}
 	void RenderingEngine::InitGBuffer()
 	{
@@ -88,12 +114,27 @@ namespace nsK2EngineLow
 			spriteInitData.m_textures[texNo++] = &gBuffer.GetRenderTargetTexture();
 		}
 		spriteInitData.m_fxFilePath = "Assets/shader/DeferredLighting.fx";
-		//影を追加したらここも分岐するようになるかもソフトシャドウとハードシャドウで
-		spriteInitData.m_psEntryPoinFunc = "PSMainSoftShadow";
+		
+		if (m_isSoftShadow)
+		{
+			spriteInitData.m_psEntryPoinFunc = "PSMainSoftShadow";
+		}
+		else
+		{
+			spriteInitData.m_psEntryPoinFunc = "PSMainHardShadow";
+		}
 
 		//ライトの情報を定数バッファに渡す
 		spriteInitData.m_expandConstantBuffer = &m_deferredLightingCB;
 		spriteInitData.m_expandConstantBufferSize = sizeof(m_deferredLightingCB);
+
+		for (int i = 0; i < MAX_DIRECTIONAL_LIGHT; i++)
+		{
+			for (int areaNo = 0; areaNo < NUM_SHADOW_MAP; areaNo++)
+			{
+				spriteInitData.m_textures[texNo++] = &m_shadowMapRenders[i].GetShadowMap(areaNo);
+			}
+		}
 
 		spriteInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		m_diferredLightingSprite.Init(spriteInitData);
@@ -162,6 +203,41 @@ namespace nsK2EngineLow
 		//初期化オブジェクトを使って、スプライトを初期化する
 		m_copyToFrameBufferSprite.Init(spriteInitData);
 	}
+	void RenderingEngine::RenderToZPrepass(RenderContext& rc)
+	{
+		BeginGPUEvent("ZPrepass");
+
+		rc.WaitUntilToPossibleSetRenderTarget(m_zPrepassRenderTarget);
+		rc.SetRenderTargetAndViewport(m_zPrepassRenderTarget);
+		rc.ClearRenderTargetView(m_zPrepassRenderTarget);
+
+		for (auto& renderObj : m_renderObjects)
+		{
+			renderObj->OnZPrepass(rc);
+		}
+
+		rc.WaitUntilFinishDrawingToRenderTarget(m_zPrepassRenderTarget);
+		EndGPUEvent();
+	}
+	void RenderingEngine::RenderToShadowMap(RenderContext& rc)
+	{
+		BeginGPUEvent("RenderToShadowMap");
+		int ligNo = 0;
+		for (auto& shadowMapRender : m_shadowMapRenders)
+		{
+			if (m_sceneLight.IsCastShadow(ligNo))
+			{
+				shadowMapRender.Render(
+					rc,
+					ligNo,
+					m_deferredLightingCB.m_light.directionalLight[ligNo].direction,
+					m_renderObjects
+				);
+			}
+			ligNo++;
+		}
+		EndGPUEvent();
+	}
 	void RenderingEngine::RenderToGBuffer(RenderContext& rc)
 	{
 		BeginGPUEvent("RenderToGBuffer");
@@ -195,6 +271,13 @@ namespace nsK2EngineLow
 
 		// ディファードライティングに必要なライト情報を更新する
 		m_deferredLightingCB.m_light.eyePos = g_camera3D->GetPosition();
+		for (int i = 0; i < MAX_DIRECTIONAL_LIGHT; i++)
+		{
+			for (int areaNo = 0; areaNo < NUM_SHADOW_MAP; areaNo++)
+			{
+				m_deferredLightingCB.mlvp[i][areaNo] = m_shadowMapRenders[i].GetLVPMatrix(areaNo);
+			}
+		}
 		m_deferredLightingCB.m_light.mViewProjInv.Inverse(g_camera3D->GetViewProjectionMatrix());
 
 		rc.WaitUntilToPossibleSetRenderTarget(m_mainRenderTarget);

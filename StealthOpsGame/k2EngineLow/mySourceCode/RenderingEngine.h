@@ -2,6 +2,7 @@
 
 #include "MyRenderer.h"
 #include "SceneLight.h"
+#include "ShadowMapRender.h"
 
 namespace nsK2EngineLow
 {
@@ -14,6 +15,7 @@ namespace nsK2EngineLow
 		struct SDeferredLightingCB
 		{
 			Light m_light;	//ライト
+			Matrix mlvp[MAX_DIRECTIONAL_LIGHT][NUM_SHADOW_MAP];	//ライトビュープロジェクション行列
 		};
 
 	public:
@@ -22,7 +24,7 @@ namespace nsK2EngineLow
 		/// <summary>
 		/// 初期化処理
 		/// </summary>
-		void Init();
+		void Init(const bool isSoftShadow);
 		/// <summary>
 		/// 描画オブジェクトを追加。
 		/// </summary>
@@ -38,17 +40,26 @@ namespace nsK2EngineLow
 		/// <summary>
 		/// ディレクションライトのパラメータを設定
 		/// </summary>
-		/// <param name="lightNo"></param>
-		/// <param name="direction"></param>
-		/// <param name="color"></param>
+		/// <param name="lightNo">ライト番号</param>
+		/// <param name="direction">ライト方向</param>
+		/// <param name="color">ライトの色</param>
 		void SetDirectionLight(const int lightNo, const Vector3 direction, const Vector3 color)
 		{
 			m_sceneLight.SetDirectionLight(lightNo, direction, color);
 		}
 		/// <summary>
+		/// キャストシャドウフラグを取得
+		/// </summary>
+		/// <param name="lightNo">ライト番号</param>
+		/// <returns>trueだったら影を落とす</returns>
+		void SetDirectionLightCastShadow(const int lightNo, const bool flag)
+		{
+			m_sceneLight.SetDirectionLightCastShadow(lightNo, flag);
+		}
+		/// <summary>
 		/// 環境光を設定。
 		/// </summary>
-		/// <param name="ambient"></param>
+		/// <param name="ambient">環境光の色</param>
 		void SetAmbient(const Vector3 ambient)
 		{
 			m_sceneLight.SetAmbient(ambient);
@@ -61,8 +72,39 @@ namespace nsK2EngineLow
 		{
 			return m_deferredLightingCB;
 		}
+		/// <summary>
+		/// シャドウマップテクスチャにクエリを行う
+		/// </summary>
+		/// <param name="queryFunc"></param>
+		void QueryShadowMapTexture(std::function< void(Texture& shadowMap) > queryFunc)
+		{
+			for (int i = 0; i < MAX_DIRECTIONAL_LIGHT; i++)
+			{
+				for (int areaNo = 0; areaNo < NUM_SHADOW_MAP; areaNo++)
+				{
+					queryFunc(m_shadowMapRenders[i].GetShadowMap(areaNo));
+				}
+			}
+		}
+
+		/// <summary>
+		/// ソフトシャドウをtrueなら行う
+		/// </summary>
+		/// <returns></returns>
+		const bool IsSoftShadow() const
+		{
+			return m_isSoftShadow;
+		}
 
 	private:
+		/// <summary>
+		/// ZPrepassレンダーターゲットを初期化
+		/// </summary>
+		void InitZPrepassRenderTarget();
+		/// <summary>
+		/// シャドウマップレンダーを初期化
+		/// </summary>
+		void InitShadowMapRender();
 		/// <summary>
 		/// G-Bufferを初期化
 		/// </summary>
@@ -87,6 +129,16 @@ namespace nsK2EngineLow
 		/// メインレンダリングターゲットのカラーバッファの内容をフレームバッファにコピーするスプライトを初期化する
 		/// </summary>
 		void InitCopyMainRenderTargetToFrameBufferSprite();
+		/// <summary>
+		/// ZPrepassへの描画
+		/// </summary>
+		/// <param name="rc"></param>
+		void RenderToZPrepass(RenderContext& rc);
+		/// <summary>
+		/// シャドウマップへの描画
+		/// </summary>
+		/// <param name="rc"></param>
+		void RenderToShadowMap(RenderContext& rc);
 		/// <summary>
 		/// G-Bufferへの描画
 		/// </summary>
@@ -124,15 +176,19 @@ namespace nsK2EngineLow
 			enGBufferNum,                   // G-Bufferの数
 		};
 
-		SDeferredLightingCB			m_deferredLightingCB;       // ディファードライティング用の定数バッファ
-		SceneLight					m_sceneLight;               // シーンライト
-		RenderTarget				m_mainRenderTarget;			//メインレンダーターゲット
-		RenderTarget				m_2DRenderTarget;			//2D描画用のレンダーターゲット
-		RenderTarget				m_gBuffer[enGBufferNum];	//G-Bufferレンダーターゲット配列
-		Sprite						m_copyToFrameBufferSprite;	//フレームバッファにコピーする画像
-		Sprite						m_2DSprite;					//2D描画用のスプライト
+		SDeferredLightingCB			m_deferredLightingCB;							// ディファードライティング用の定数バッファ
+		SceneLight					m_sceneLight;									// シーンライト
+		ShadowMapRender				m_shadowMapRenders[MAX_DIRECTIONAL_LIGHT];		//シャドウマップへの描画処理
+		RenderTarget				m_zPrepassRenderTarget;							//ZPrepass描画用のレンダリングターゲット
+		RenderTarget				m_mainRenderTarget;								//メインレンダーターゲット
+		RenderTarget				m_2DRenderTarget;								//2D描画用のレンダーターゲット
+		RenderTarget				m_gBuffer[enGBufferNum];						//G-Bufferレンダーターゲット配列
+		Sprite						m_copyToFrameBufferSprite;						//フレームバッファにコピーする画像
+		Sprite						m_2DSprite;										//2D描画用のスプライト
 		Sprite						m_mainSprite;
-		Sprite						m_diferredLightingSprite;	//ディファードライティングを行うためのスプライト
-		std::vector<IRenderer*>		m_renderObjects;			//描画オブジェクトのリスト
+		Sprite						m_diferredLightingSprite;						//ディファードライティングを行うためのスプライト
+		std::vector<IRenderer*>		m_renderObjects;								//描画オブジェクトのリスト
+
+		bool						m_isSoftShadow = false;							//ソフトシャドウを行う？
 	};
 }

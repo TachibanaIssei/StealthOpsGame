@@ -57,12 +57,12 @@ void Player::Update()
 	else if (g_pad[0]->IsPress(enButtonRB1))
 	{
 		m_position.z += 0.5f;
-		m_position2.z += 0.5f;
+		//m_position2.z += 0.5f;
 	}
 	if (g_pad[0]->IsPress(enButtonLB1))
 	{
 		m_position.z -= 0.5f;
-		m_position2.z -= 0.5f;
+		//m_position2.z -= 0.5f;
 	}
 	else if (g_pad[0]->IsPress(enButtonY))
 	{
@@ -102,5 +102,5 @@ void Player::Render(RenderContext& rc)
 {
 	m_unityChanGBuffer.Draw(rc);
 	m_unityChan.Draw(rc);
-	m_sprite.Draw(rc);
+	//m_sprite.Draw(rc);
 }

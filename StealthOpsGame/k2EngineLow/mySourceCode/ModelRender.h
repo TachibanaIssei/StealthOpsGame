@@ -15,12 +15,14 @@ namespace nsK2EngineLow
 		/// <param name="numAnimationClips">アニメーションクリップの数</param>
 		/// <param name="enModelUpAxis">モデルの上方向</param>
 		/// <param name="isShadowReceiver">trueなら影が落ちる</param>
+		/// <param name="isFrontCullingOnDrawShadowMap">表カリングを行う？</param>
 		void Init(
 			const char* tkmFilePath,
 			AnimationClip* animationClips = nullptr,
 			const int numAnimationClips = 0,
 			const EnModelUpAxis enModelUpAxis = enModelUpAxisZ,
-			const bool isShadowReceiver = true
+			const bool isShadowReceiver = true,
+			const bool isFrontCullingOnDrawShadowMap = false
 		);
 
 		/// <summary>
@@ -35,11 +37,15 @@ namespace nsK2EngineLow
 		/// <param name="animationClips">アニメーションクリップ</param>
 		/// <param name="numAnimationClips">アニメーションクリップの数</param>
 		/// <param name="enModelUpAxis">モデルの上方向</param>
+		/// <param name="isShadowReciever">trueなら影が落ちる</param>
+		/// <param name="isFrontCullingOnDrawShadowMap">影モデル描画時に表カリングを行う？</param>
 		void InitTrancelucent(
 			const char* tkmFilePath,
-			AnimationClip* animationClips,
-			const int numAnimationClips,
-			const EnModelUpAxis enModelUpAxis
+			AnimationClip* animationClips = nullptr,
+			const int numAnimationClips = 0,
+			const EnModelUpAxis enModelUpAxis = enModelUpAxisZ,
+			const bool isShadowReciever = true,
+			const bool isFrontCullingOnDrawShadowMap = false
 		);
 
 		/// <summary>
@@ -128,7 +134,7 @@ namespace nsK2EngineLow
 		/// ボーンの名前からボーン番号を検索
 		/// </summary>
 		/// <param name="boneName">ボーンの名前</param>
-		/// <returns>ボーン番号。見つからなかった場合は-1が返る</returns>
+		/// <returns>ボーン番号 見つからなかった場合は-1が返る</returns>
 		const int FindBoneID(const wchar_t* boneName)const
 		{
 			return m_skeleton.FindBoneID(boneName);
@@ -156,8 +162,8 @@ namespace nsK2EngineLow
 		/// <summary>
 		/// アニメーション再生。
 		/// </summary>
-		/// <param name="animNo">アニメーションクリップの番号。</param>
-		/// <param name="interpolateTime">補完時間(単位：秒。)</param>
+		/// <param name="animNo">アニメーションクリップの番号</param>
+		/// <param name="interpolateTime">補完時間(単位：秒)</param>
 		void PlayAnimation(const int animNo, const float interpolateTime = 0.0f)
 		{
 			m_animation.Play(animNo, interpolateTime);
@@ -174,7 +180,7 @@ namespace nsK2EngineLow
 		/// <summary>
 		/// アニメーション再生の速度を設定する。
 		/// </summary>
-		/// <param name="animationSpeed">数値の分だけ倍にする。</param>
+		/// <param name="animationSpeed">数値の分だけ倍にする</param>
 		void SetAnimationSpeed(const float animationSpeed)
 		{
 			m_animationSpeed = animationSpeed;
@@ -216,14 +222,40 @@ namespace nsK2EngineLow
 			const EnModelUpAxis enModelUpAxis
 		);
 		/// <summary>
+		/// ZPrepass描画用のモデルの初期化
+		/// </summary>
+		/// <param name="tkmFilePath">tkmファイルパス</param>
+		/// <param name="modelUpAxis">モデルの上方向</param>
+		void InitModelOnZPrepass(
+			const char* tkmFilePath,
+			const EnModelUpAxis modelUpAxis
+		);
+		/// <summary>
+		/// シャドウマップ描画用の初期化
+		/// </summary>
+		/// <param name="tkmFilePath">tkmファイルパス</param>
+		/// <param name="modelUpAxis">モデルの上方向</param>
+		/// <param name="isFrontCullingOnDrawShadowMap">フロントカリングを行う？</param>
+		void InitModelOnShadowMap(
+			const char* tkmFilePath,
+			EnModelUpAxis modelUpAxis,
+			bool isFrontCullingOnDrawShadowMap
+		);
+		/// <summary>
 		/// GBuffer描画用のモデルを初期化
 		/// </summary>
 		/// <param name="tkmFilePath">tkmファイルパス</param>
 		/// <param name="enModelUpAxis">モデルの上方向</param>
 		void InitModelOnRenderGBuffer(
 			const char* tkmFilePath,
-			const EnModelUpAxis enModelUpAxis
+			const EnModelUpAxis enModelUpAxis,
+			const bool isShadowReciever
 		);
+		/// <summary>
+		/// ZPrepass描画パスから呼ばれる処理
+		/// </summary>
+		/// <param name="rc"></param>
+		void OnZPrepass(RenderContext& rc) override;
 		/// <summary>
 		/// GBuffer描画パスから呼ばれる処理
 		/// </summary>
@@ -239,18 +271,28 @@ namespace nsK2EngineLow
 		/// </summary>
 		/// <param name="rc"></param>
 		void OnTlanslucentRender(RenderContext& rc) override;
+		/// <summary>
+		/// シャドウマップ描画パスから呼ばれる処理
+		/// </summary>
+		/// <param name="rc">レンダーコンテキスト</param>
+		/// <param name="ligNo">ライト番号</param>
+		/// <param name="shadowMapNo">シャドウマップ番号</param>
+		/// <param name="lvpMatrix">ライトビュープロジェクション行列</param>
+		virtual void OnRenderShadowMap(RenderContext& rc,const int ligNo,const int shadowMapNo,const Matrix& lvpMatrix) override;
 
 	private:
-		Skeleton					m_skeleton;									//スケルトン
-		AnimationClip*				m_animationClips = nullptr;					//アニメーションクリップ。
-		int							m_numAnimationClips = 0;					//アニメーションクリップの数。
-		Animation					m_animation;								//アニメーション。
-		float						m_animationSpeed = 1.0f;					//アニメーションスピード
-		Vector3						m_position = Vector3::Zero;					//座標
-		Vector3						m_scale = Vector3::One;						//大きさ
-		Quaternion					m_rotation = Quaternion::Identity;			//回転
-		Model						m_forwardRenderModel;						//フォワードレンダリングで描画されるモデル
-		Model						m_translucentModel;							//半透明モデル
-		Model						m_renderToGBufferModel;						//RenderToGBufferで描画されるモデル
+		Skeleton					m_skeleton;												//スケルトン
+		AnimationClip*				m_animationClips = nullptr;								//アニメーションクリップ。
+		int							m_numAnimationClips = 0;								//アニメーションクリップの数。
+		Animation					m_animation;											//アニメーション。
+		float						m_animationSpeed = 1.0f;								//アニメーションスピード
+		Vector3						m_position = Vector3::Zero;								//座標
+		Vector3						m_scale = Vector3::One;									//大きさ
+		Quaternion					m_rotation = Quaternion::Identity;						//回転
+		Model						m_zPrepassModel;										//ZPrepassで描画されるモデル
+		Model						m_forwardRenderModel;									//フォワードレンダリングで描画されるモデル
+		Model						m_translucentModel;										//半透明モデル
+		Model						m_renderToGBufferModel;									//RenderToGBufferで描画されるモデル
+		Model						m_shadowModels[MAX_DIRECTIONAL_LIGHT][NUM_SHADOW_MAP];	//シャドウマップに描画されるモデル
 	};
 }

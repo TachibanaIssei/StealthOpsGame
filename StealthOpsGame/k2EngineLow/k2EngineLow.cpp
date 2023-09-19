@@ -40,7 +40,7 @@ namespace nsK2EngineLow {
 		GameObjectManager::CreateInstance();
 		PhysicsWorld::CreateInstance();
 		g_renderingEngine = new RenderingEngine;
-		g_renderingEngine->Init();
+		g_renderingEngine->Init(true);
 		g_soundEngine = new SoundEngine();
 		if (m_graphicsEngine) {
 			//エフェクトエンジンの初期化。

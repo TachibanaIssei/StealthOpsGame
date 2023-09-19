@@ -36,7 +36,10 @@ struct SPSIn
 ///////////////////////////////////////
 #include "PBRLighting.h"
 
-#include "Sampler.h"
+///////////////////////////////////////
+// シャドウイング
+///////////////////////////////////////
+#include "Shadowing.h"
 
 ////////////////////////////////////////////////
 // 関数定義。
@@ -51,10 +54,7 @@ SPSIn VSMainCore(SVSIn vsIn, float4x4 mWorldLocal)
     
     // 頂点座標をワールド座標系に変換する。
     psIn.pos = CalcVertexPositionInWorldSpace(vsIn.pos, mWorldLocal);
-
-    // 頂点シェーダーからワールド座標を出力
 	psIn.worldPos = psIn.pos;
-
 	psIn.pos = mul(mView, psIn.pos); // ワールド座標系からカメラ座標系に変換
 	psIn.pos = mul(mProj, psIn.pos); // カメラ座標系からスクリーン座標系に変換
     
@@ -82,7 +82,7 @@ float4 PSMainCore( SPSIn In, uniform int isSoftShadow)
     //アルベドカラーをサンプリング。
     float4 albedoColor = albedoTexture.Sample(Sampler, In.uv);
     //法線をサンプリング。
-    float3 normal = normalTexture.Sample(Sampler, In.uv).xyz;
+    float3 normal = GetNormalFromNormalMap(normalTexture, Sampler,In.normal,In.tangent,In.biNormal,In.uv);
     //ワールド座標をサンプリング。
     float3 worldPos = In.worldPos;
     //スペキュラカラーをサンプリング。
@@ -95,25 +95,29 @@ float4 PSMainCore( SPSIn In, uniform int isSoftShadow)
 	//影生成用のパラメータ
     float shadowParam = 1.0f;
     
-    float2 viewportPos = In.pos.xy;
+    //float2 viewportPos = In.pos.xy;
 
 	// 視線に向かって伸びるベクトルを計算する
     float3 toEye = normalize(light.eyePos - worldPos);
 
 	float3 lig = 0;
-    
     for(int ligNo = 0; ligNo < NUM_DIRECTIONAL_LIGHT; ligNo++)
     {
         // 影の落ち具合を計算する。
         float shadow = 0.0f;
-        // if( light.directionalLight[ligNo].castShadow == 1){
-        //     //影を生成するなら。
-        //     shadow = CalcShadowRate( g_shadowMap, light.mlvp, ligNo, worldPos, isSoftShadow ) * shadowParam;
-        // }
+        if( light.directionalLight[ligNo].castShadow == 1){
+            //影を生成するなら。
+            shadow = CalcShadowRate( 
+                g_shadowMap, 
+                light.mlvp, 
+                ligNo, 
+                worldPos, 
+                isSoftShadow ) * shadowParam;
+        }
         
         lig += CalcLighting(
             light.directionalLight[ligNo].direction,
-            light.directionalLight[ligNo].color,
+            light.directionalLight[ligNo].color.xyz,
             normal,
             toEye,
             albedoColor,
@@ -124,14 +128,20 @@ float4 PSMainCore( SPSIn In, uniform int isSoftShadow)
     }
 
 	// 環境光による底上げ
-    lig += light.ambientLight * albedoColor;
+    lig += light.ambientLight * albedoColor.xyz;
 
 	float4 finalColor = 1.0f;
     finalColor.xyz = lig;
     return float4(finalColor.xyz, albedoColor.a);
 }
 
+//ソフトシャドウを行うピクセルシェーダー
 float4 PSMainSoftShadow(SPSIn In) : SV_Target0
 {
     return PSMainCore( In, true);
 }
+//ハードシャドウを行うピクセルシェーダー。
+float4 PSMainHardShadow(SPSIn In) : SV_Target0
+{
+    return PSMainCore( In, false);
+} 

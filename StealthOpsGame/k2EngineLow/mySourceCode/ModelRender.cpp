@@ -12,17 +12,23 @@ namespace nsK2EngineLow
 
 	void ModelRender::Init(
 		const char* tkmFilePath, 
-		AnimationClip* animationClips,
+		AnimationClip* animationClips, 
 		const int numAnimationClips, 
 		const EnModelUpAxis enModelUpAxis, 
-		const bool shadow)
+		const bool isShadowReceiver, 
+		const bool isFrontCullingOnDrawShadowMap
+	)
 	{
 		// スケルトンを初期化
 		InitSkeleton(tkmFilePath);
 		// アニメーションを初期化
 		InitAnimation(animationClips, numAnimationClips, enModelUpAxis);
-		// GBuffer描画用のモデルを初期化。
-		InitModelOnRenderGBuffer(tkmFilePath, enModelUpAxis);
+		// GBuffer描画用のモデルを初期化
+		InitModelOnRenderGBuffer(tkmFilePath, enModelUpAxis, isShadowReceiver);
+		//ZPrepass描画用のモデルを初期化
+		InitModelOnZPrepass(tkmFilePath, enModelUpAxis);
+		//シャドウマップ描画用のモデルを初期化
+		InitModelOnShadowMap(tkmFilePath, enModelUpAxis, isFrontCullingOnDrawShadowMap);
 		// 各種ワールド行列を更新する
 		UpdateWorldMatrixInModels();
 	}
@@ -32,10 +38,17 @@ namespace nsK2EngineLow
 		InitSkeleton(initData.m_tkmFilePath);
 		initData.m_colorBufferFormat[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		m_forwardRenderModel.Init(initData);
+		InitModelOnShadowMap(initData.m_tkmFilePath, initData.m_modelUpAxis, false);
 		UpdateWorldMatrixInModels();
 	}
 
-	void ModelRender::InitTrancelucent(const char* tkmFilePath, AnimationClip* animationClips, const int numAnimationClips, const EnModelUpAxis enModelUpAxis)
+	void ModelRender::InitTrancelucent(
+		const char* tkmFilePath,
+		AnimationClip* animationClips,
+		const int numAnimationClips,
+		const EnModelUpAxis enModelUpAxis,
+		const bool isShadowReciever,
+		const bool isFrontCullingOnDrawShadowMap)
 	{
 		//スケルトンを初期化
 		InitSkeleton(tkmFilePath);
@@ -43,6 +56,8 @@ namespace nsK2EngineLow
 		InitAnimation(animationClips, numAnimationClips, enModelUpAxis);
 		//半透明モデルを初期化
 		InitModelOnTranslucent(tkmFilePath, enModelUpAxis);
+		//シャドウマップ描画用のモデルを初期化
+		InitModelOnShadowMap(tkmFilePath, enModelUpAxis, isFrontCullingOnDrawShadowMap);
 		//各種ワールド行列を更新
 		UpdateWorldMatrixInModels();
 	}
@@ -55,16 +70,11 @@ namespace nsK2EngineLow
 		if (m_skeleton.IsInited())
 		{
 			//スケルトンを更新する
-			if (m_renderToGBufferModel.IsInited())
+			if (m_skeleton.IsInited())
 			{
-				m_skeleton.Update(m_renderToGBufferModel.GetWorldMatrix());
-			}
-			else if (m_translucentModel.IsInited())
-			{
-				m_skeleton.Update(m_translucentModel.GetWorldMatrix());
+				m_skeleton.Update(m_zPrepassModel.GetWorldMatrix());
 			}
 		}
-
 		//アニメーションを進める
 		m_animation.Progress(g_gameTime->GetFrameDeltaTime() * m_animationSpeed);
 	}
@@ -87,6 +97,7 @@ namespace nsK2EngineLow
 
 	void ModelRender::UpdateWorldMatrixInModels()
 	{
+		m_zPrepassModel.UpdateWorldMatrix(m_position, m_rotation, m_scale);
 		if (m_renderToGBufferModel.IsInited())
 		{
 			m_renderToGBufferModel.UpdateWorldMatrix(m_position, m_rotation, m_scale);
@@ -98,6 +109,13 @@ namespace nsK2EngineLow
 		if (m_translucentModel.IsInited())
 		{
 			m_translucentModel.UpdateWorldMatrix(m_position, m_rotation, m_scale);
+		}
+		for (auto& models : m_shadowModels) {
+			for (auto& model : models) {
+				if (model.IsInited()) {
+					model.UpdateWorldMatrix(m_position, m_rotation, m_scale);
+				}
+			}
 		}
 	}
 
@@ -137,7 +155,15 @@ namespace nsK2EngineLow
 		if (m_animationClips != nullptr) {
 			modelInitData.m_skeleton = &m_skeleton;
 		}
-		modelInitData.m_psEntryPointFunc = "PSMainSoftShadow";
+
+		if (g_renderingEngine->IsSoftShadow())
+		{
+			modelInitData.m_psEntryPointFunc = "PSMainSoftShadow";
+		}
+		else
+		{
+			modelInitData.m_psEntryPointFunc = "PSMainHardShadow";
+		}
 
 		modelInitData.m_modelUpAxis = enModelUpAxis;
 		modelInitData.m_expandConstantBuffer = &g_renderingEngine->GetDeferredLightingCB();
@@ -146,12 +172,75 @@ namespace nsK2EngineLow
 		modelInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R16G16B16A16_FLOAT;
 		modelInitData.m_alphaBlendMode = AlphaBlendMode_Trans;
 
+		int expandSRVNo = 0;
+		g_renderingEngine->QueryShadowMapTexture([&](Texture& shadowMap) {
+			modelInitData.m_expandShaderResoruceView[expandSRVNo] = &shadowMap;
+			expandSRVNo++;
+		});
 		m_translucentModel.Init(modelInitData);
+	}
+
+	void ModelRender::InitModelOnZPrepass(const char* tkmFilePath, const EnModelUpAxis modelUpAxis)
+	{
+		ModelInitData modelInitData;
+		modelInitData.m_tkmFilePath = tkmFilePath;
+		modelInitData.m_fxFilePath = "Assets/shader/preProcess/ZPrepass.fx";
+		modelInitData.m_modelUpAxis = modelUpAxis;
+
+		// 頂点シェーダーのエントリーポイントをセットアップ
+		SetupVertexShaderEntryPointFunc(modelInitData);
+
+		if (m_animationClips != nullptr) {
+			modelInitData.m_skeleton = &m_skeleton;
+		}
+
+		modelInitData.m_colorBufferFormat[0] = g_zPrepassRenderTargetFormat.colorBufferFormat;
+
+		m_zPrepassModel.Init(modelInitData);
+	}
+
+	void ModelRender::InitModelOnShadowMap(const char* tkmFilePath, EnModelUpAxis modelUpAxis, bool isFrontCullingOnDrawShadowMap)
+	{
+		ModelInitData modelInitData;
+		modelInitData.m_tkmFilePath = tkmFilePath;
+		modelInitData.m_modelUpAxis = modelUpAxis;
+		if (isFrontCullingOnDrawShadowMap)
+		{
+			//表カリングを行う
+			modelInitData.m_cullMode = D3D12_CULL_MODE_FRONT;
+		}
+		SetupVertexShaderEntryPointFunc(modelInitData);
+
+		if (m_animationClips != nullptr)
+		{
+			modelInitData.m_skeleton = &m_skeleton;
+		}
+		modelInitData.m_fxFilePath = "Assets/shader/preProcess/DrawShadowMap.fx";
+
+		if (g_renderingEngine->IsSoftShadow())
+		{
+			modelInitData.m_colorBufferFormat[0] = g_softShadowMapFormat.colorBufferFormat;
+		}
+		else
+		{
+			modelInitData.m_colorBufferFormat[0] = g_hardShadowMapFormat.colorBufferFormat;
+		}
+
+		for (int ligNo = 0; ligNo < MAX_DIRECTIONAL_LIGHT; ligNo++)
+		{
+			Model* shadowModelArray = m_shadowModels[ligNo];
+			for (int shadowMapNo = 0; shadowMapNo < NUM_SHADOW_MAP; shadowMapNo++)
+			{
+				shadowModelArray[shadowMapNo].Init(modelInitData);
+			}
+		}
 	}
 
 	void ModelRender::InitModelOnRenderGBuffer(
 		const char* tkmFilePath,
-		const EnModelUpAxis enModelUpAxis)
+		const EnModelUpAxis enModelUpAxis,
+		const bool isShadowReciever
+	)
 	{
 		ModelInitData modelInitData;
 		modelInitData.m_fxFilePath = "Assets/shader/preProcess/RenderToGBufferFor3DModel.fx";
@@ -161,14 +250,23 @@ namespace nsK2EngineLow
 		if (m_animationClips != nullptr) {
 			modelInitData.m_skeleton = &m_skeleton;
 		}
-		modelInitData.m_modelUpAxis = enModelUpAxis;
 
+		if (isShadowReciever) {
+			modelInitData.m_psEntryPointFunc = "PSMainShadowReciever";
+		}
+
+		modelInitData.m_modelUpAxis = enModelUpAxis;
 		modelInitData.m_tkmFilePath = tkmFilePath;
 		modelInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R32G32B32A32_FLOAT;
 		modelInitData.m_colorBufferFormat[1] = DXGI_FORMAT_R8G8B8A8_SNORM;
 		modelInitData.m_colorBufferFormat[2] = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 		m_renderToGBufferModel.Init(modelInitData);
+	}
+
+	void ModelRender::OnZPrepass(RenderContext& rc)
+	{
+		m_zPrepassModel.Draw(rc, 1);
 	}
 
 	void ModelRender::OnRenderToGBuffer(RenderContext& rc)
@@ -188,6 +286,18 @@ namespace nsK2EngineLow
 	{
 		if (m_translucentModel.IsInited()) {
 			m_translucentModel.Draw(rc, 1);
+		}
+	}
+	void ModelRender::OnRenderShadowMap(RenderContext& rc, const int ligNo, const int shadowMapNo, const Matrix& lvpMatrix)
+	{
+		if (m_shadowModels[ligNo][shadowMapNo].IsInited())
+		{
+			m_shadowModels[ligNo][shadowMapNo].Draw(
+				rc,
+				g_matIdentity,
+				lvpMatrix,
+				1
+			);
 		}
 	}
 }

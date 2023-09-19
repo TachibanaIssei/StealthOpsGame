@@ -240,6 +240,8 @@
     <ClCompile Include="mySourceCode\SkyCube.cpp" />
     <ClCompile Include="mySourceCode\FontRender.cpp" />
     <ClCompile Include="mySourceCode\SceneLight.cpp" />
+    <ClCompile Include="mySourceCode\CascadeShadowMapMatrix.cpp" />
+    <ClCompile Include="mySourceCode\ShadowMapRender.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="k2EngineLowPreCompile.h" />
@@ -532,6 +534,8 @@
     <ClInclude Include="mySourceCode\SkyCube.h" />
     <ClInclude Include="mySourceCode\FontRender.h" />
     <ClInclude Include="mySourceCode\SceneLight.h" />
+    <ClInclude Include="mySourceCode\CascadeShadowMapMatrix.h" />
+    <ClInclude Include="mySourceCode\ShadowMapRender.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="graphics">

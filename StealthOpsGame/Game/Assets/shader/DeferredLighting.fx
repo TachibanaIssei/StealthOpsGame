@@ -3,10 +3,6 @@
 ///////////////////////////////////////
 
 ///////////////////////////////////////
-// 定数
-///////////////////////////////////////
-
-///////////////////////////////////////
 // 構造体。
 ///////////////////////////////////////
 
@@ -42,7 +38,10 @@ struct PSInput
 ///////////////////////////////////////
 #include "PBRLighting.h"
 
-#include "Sampler.h"
+///////////////////////////////////////
+// シャドウイング
+///////////////////////////////////////
+#include "Shadowing.h"
 
 ///////////////////////////////////////
 // 関数
@@ -92,29 +91,29 @@ float3 CalcDirectionLight(
     float4 albedoColor, 
     float metaric, 
     float smooth, 
-    float3 specColor
-    //float3 worldPos,
-    //bool isSoftShadow,
-    //float shadowParam
+    float3 specColor,
+    float3 worldPos,
+    bool isSoftShadow,
+    float shadowParam
 ){
     float3 lig = 0;
     for(int ligNo = 0; ligNo < NUM_DIRECTIONAL_LIGHT; ligNo++)
     {
         // 影の落ち具合を計算する。
         float shadow = 0.0f;
-        // if( light.directionalLight[ligNo].castShadow == 1){
-        //     //影を生成するなら。
-        //     shadow = CalcShadowRate( 
-        //         g_shadowMap, 
-        //         light.mlvp, 
-        //         ligNo, 
-        //         worldPos, 
-        //         isSoftShadow ) * shadowParam;
-        // }
+        if( light.directionalLight[ligNo].castShadow == 1){
+            //影を生成するなら。
+            shadow = CalcShadowRate( 
+                g_shadowMap, 
+                light.mlvp, 
+                ligNo, 
+                worldPos, 
+                isSoftShadow ) * shadowParam;
+        }
         
         lig += CalcLighting(
             light.directionalLight[ligNo].direction,
-            light.directionalLight[ligNo].color,
+            light.directionalLight[ligNo].color.xyz,
             normal,
             toEye,
             albedoColor,
@@ -146,7 +145,7 @@ float4 PSMainCore(PSInput In, uniform int isSoftShadow)
     //影生成用のパラメータ
     float shadowParam = metallicShadowSmoothTexture.Sample(Sampler, In.uv).g;
     
-    float2 viewportPos = In.pos.xy;
+    //float2 viewportPos = In.pos.xy;
 
     // 視線に向かって伸びるベクトルを計算する
     float3 toEye = normalize(light.eyePos - worldPos);
@@ -158,14 +157,14 @@ float4 PSMainCore(PSInput In, uniform int isSoftShadow)
         albedoColor, 
         metaric, 
         smooth, 
-        specColor
-        //worldPos,
-        //isSoftShadow,
-        //shadowParam
+        specColor,
+        worldPos,
+        isSoftShadow,
+        shadowParam
     );
 
     // 環境光による底上げ
-    lig += light.ambientLight * albedoColor;
+    lig += light.ambientLight * albedoColor.xyz;
 
     float4 finalColor = 1.0f;
     finalColor.xyz = lig;
