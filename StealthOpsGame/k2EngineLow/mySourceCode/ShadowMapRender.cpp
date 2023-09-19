@@ -51,7 +51,9 @@ namespace nsK2EngineLow
 
 		if (isSoftShadow)
 		{
-			//ガウシアンブラーをここで初期化する
+			m_gausBlur[0].Init(&m_shadowMaps[0].GetRenderTargetTexture());
+			m_gausBlur[1].Init(&m_shadowMaps[1].GetRenderTargetTexture());
+			m_gausBlur[2].Init(&m_shadowMaps[2].GetRenderTargetTexture());
 		}
 		m_isSoftShadow = isSoftShadow;
 	}
@@ -89,6 +91,15 @@ namespace nsK2EngineLow
 			}
 			rc.WaitUntilFinishDrawingToRenderTarget(shadowMap);
 			shadowMapNo++;
+		}
+
+		if (m_isSoftShadow)
+		{
+			//ブラーを実行
+			for (auto& blur : m_gausBlur)
+			{
+				blur.ExecuteOnGPU(rc, 1.0f);
+			}
 		}
 	}
 }

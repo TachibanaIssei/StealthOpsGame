@@ -32,6 +32,10 @@ namespace nsK2EngineLow
 		/// <returns></returns>
 		Texture& GetShadowMap(const int areaNo)
 		{
+			if (m_isSoftShadow)
+			{
+				return m_gausBlur[areaNo].GetBokeTexture();
+			}
 			return m_shadowMaps[areaNo].GetRenderTargetTexture();
 		}
 		/// <summary>
@@ -48,6 +52,7 @@ namespace nsK2EngineLow
 		CascadeShadowMapMatrix		m_cascadeShadowMapMatrix;										//カスケードシャドウマップの行列を扱うオブジェクト
 		RenderTarget				m_shadowMaps[NUM_SHADOW_MAP];									//レンダーターゲット
 		float						m_cascadeAreaRateArray[NUM_SHADOW_MAP] = { 0.05f, 0.3f,1.0f };	//カスケードシャドウの近～遠距離の比率
+		GaussianBlur				m_gausBlur[NUM_SHADOW_MAP];										//シャドウマップにブラーをかける。ソフトシャドウで使用
 		bool						m_isSoftShadow = false;											//ソフトシャドウを行う？
 	};
 }

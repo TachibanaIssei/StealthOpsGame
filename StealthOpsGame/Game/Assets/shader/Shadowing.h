@@ -3,9 +3,9 @@
 #ifndef _SHADOWING_H_
 #define _SHADOWING_H_
 
+#include "Shadowing_const.h"
 #include "PBRLighting_const.h"
 
-#include "Shadowing_const.h"
 static const int INFINITY = 40.0f;
 
 #include "Sampler.h"
@@ -64,7 +64,6 @@ float CalcShadowRate(
                 // ハードシャドウ。
                 shadow = 1.0f;
             }
-           
             break;
         }
     }

@@ -217,7 +217,14 @@ namespace nsK2EngineLow
 		}
 		modelInitData.m_fxFilePath = "Assets/shader/preProcess/DrawShadowMap.fx";
 
-		modelInitData.m_colorBufferFormat[0] = g_hardShadowMapFormat.colorBufferFormat;
+		if (g_renderingEngine->IsSoftShadow())
+		{
+			modelInitData.m_colorBufferFormat[0] = g_softShadowMapFormat.colorBufferFormat;
+		}
+		else
+		{
+			modelInitData.m_colorBufferFormat[0] = g_hardShadowMapFormat.colorBufferFormat;
+		}
 
 		for (int ligNo = 0; ligNo < MAX_DIRECTIONAL_LIGHT; ligNo++)
 		{
