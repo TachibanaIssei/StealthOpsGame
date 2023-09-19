@@ -39,13 +39,15 @@ namespace nsK2EngineLow
 	}
 	void RenderingEngine::InitZPrepassRenderTarget()
 	{
+		float clearColor[] = { 1.0f,1.0f,1.0f,1.0f };
 		m_zPrepassRenderTarget.Create(
 			g_graphicsEngine->GetFrameBufferWidth(),
 			g_graphicsEngine->GetFrameBufferHeight(),
 			1,
 			1,
-			DXGI_FORMAT_R32G32_FLOAT,
-			DXGI_FORMAT_D32_FLOAT
+			g_zPrepassRenderTargetFormat.colorBufferFormat,
+			g_zPrepassRenderTargetFormat.depthBufferFormat,
+			clearColor
 		);
 	}
 	void RenderingEngine::InitShadowMapRender()
@@ -207,10 +209,11 @@ namespace nsK2EngineLow
 
 		rc.WaitUntilToPossibleSetRenderTarget(m_zPrepassRenderTarget);
 		rc.SetRenderTargetAndViewport(m_zPrepassRenderTarget);
+		rc.ClearRenderTargetView(m_zPrepassRenderTarget);
 
-		for (auto& model : m_renderObjects)
+		for (auto& renderObj : m_renderObjects)
 		{
-			model->OnZPrepass(rc);
+			renderObj->OnZPrepass(rc);
 		}
 
 		rc.WaitUntilFinishDrawingToRenderTarget(m_zPrepassRenderTarget);

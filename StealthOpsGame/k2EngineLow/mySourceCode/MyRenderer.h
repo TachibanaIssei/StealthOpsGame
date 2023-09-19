@@ -33,4 +33,9 @@ namespace nsK2EngineLow
 		DXGI_FORMAT_R32G32B32A32_FLOAT,
 		DXGI_FORMAT_D32_FLOAT
 	};
+	//ZPrepassレンダーターゲットのフォーマット
+	const RenderTargetFormat g_zPrepassRenderTargetFormat = {
+		DXGI_FORMAT_R32G32_FLOAT,
+		DXGI_FORMAT_D32_FLOAT
+	};
 }

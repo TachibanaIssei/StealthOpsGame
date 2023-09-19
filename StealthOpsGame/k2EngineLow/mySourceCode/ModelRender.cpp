@@ -194,7 +194,7 @@ namespace nsK2EngineLow
 			modelInitData.m_skeleton = &m_skeleton;
 		}
 
-		modelInitData.m_colorBufferFormat[0] = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		modelInitData.m_colorBufferFormat[0] = g_zPrepassRenderTargetFormat.colorBufferFormat;
 
 		m_zPrepassModel.Init(modelInitData);
 	}
