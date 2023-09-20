@@ -192,7 +192,7 @@ namespace nsK2EngineLow
 			enGBufferAlbedoDepth,           // アルベドと深度値。αに深度値が記憶されています。
 			enGBufferNormal,                // 法線
 			enGBufferMetaricShadowSmooth,   // メタリック、影パラメータ、スムース。
-											// メタリックがr、影パラメータがg、スムースがa。gは未使用。
+											// メタリックがr、影パラメータがg、スムースがa。bは未使用。
 			enGBufferNum,                   // G-Bufferの数
 		};
 
