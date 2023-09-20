@@ -2,7 +2,8 @@
 
 #include "MyRenderer.h"
 #include "SceneLight.h"
-#include "ShadowMapRender.h"
+#include "Shadow/ShadowMapRender.h"
+#include "PostEffect/PostEffect.h"
 
 namespace nsK2EngineLow
 {
@@ -96,6 +97,25 @@ namespace nsK2EngineLow
 			return m_isSoftShadow;
 		}
 
+		/// <summary>
+		/// メインレンダリングターゲットのディスクリプタと
+		/// ZPrepassのデプスステンシルバッファでレンダリングターゲットを設定
+		/// </summary>
+		/// <param name="rc"></param>
+		void SetMainRenderTargetAndDepthStencilBuffer(RenderContext& rc)
+		{
+			rc.SetRenderTarget(m_mainRenderTarget.GetRTVCpuDescriptorHandle(), m_zPrepassRenderTarget.GetDSVCpuDescriptorHandle());
+		}
+
+		/// <summary>
+		/// ブルーム発生するしきい値を設定
+		/// </summary>
+		/// <param name="thresHold">しきい値</param>
+		void SetBloomThreshold(const float thresHold)
+		{
+			m_postEffect.SetBloomThreshold(thresHold);
+		}
+
 	private:
 		/// <summary>
 		/// ZPrepassレンダーターゲットを初期化
@@ -172,13 +192,14 @@ namespace nsK2EngineLow
 			enGBufferAlbedoDepth,           // アルベドと深度値。αに深度値が記憶されています。
 			enGBufferNormal,                // 法線
 			enGBufferMetaricShadowSmooth,   // メタリック、影パラメータ、スムース。
-											// メタリックがr、影パラメータがg、スムースがa。gは未使用。
+											// メタリックがr、影パラメータがg、スムースがa。bは未使用。
 			enGBufferNum,                   // G-Bufferの数
 		};
 
 		SDeferredLightingCB			m_deferredLightingCB;							// ディファードライティング用の定数バッファ
 		SceneLight					m_sceneLight;									// シーンライト
 		ShadowMapRender				m_shadowMapRenders[MAX_DIRECTIONAL_LIGHT];		//シャドウマップへの描画処理
+		PostEffect					m_postEffect;									//ポストエフェクト
 		RenderTarget				m_zPrepassRenderTarget;							//ZPrepass描画用のレンダリングターゲット
 		RenderTarget				m_mainRenderTarget;								//メインレンダーターゲット
 		RenderTarget				m_2DRenderTarget;								//2D描画用のレンダーターゲット

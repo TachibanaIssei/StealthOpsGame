@@ -9,8 +9,8 @@ bool Player::Start()
 	m_animationClips[enAnimationClip_Walk].SetLoopFlag(true);
 	m_animationClips[enAnimationClip_Run].Load("Assets/animData/run.tka");
 	m_animationClips[enAnimationClip_Run].SetLoopFlag(true);
-	m_unityChanGBuffer.Init("Assets/modelData/unityChan.tkm", m_animationClips, enAnimationClip_Num, enModelUpAxisY);
-	m_unityChan.InitTrancelucent("Assets/modelData/unityChan.tkm", m_animationClips, enAnimationClip_Num, enModelUpAxisY);
+	m_unityChanGBuffer.Init("Assets/modelData/unitychan/unityChan.tkm", m_animationClips, enAnimationClip_Num, enModelUpAxisY);
+	m_unityChan.InitTrancelucent("Assets/modelData/unitychan/unityChan.tkm", m_animationClips, enAnimationClip_Num, enModelUpAxisY);
 
 	m_rotation.SetRotationDegY(180.0f);
 	m_unityChanGBuffer.SetRotation(m_rotation);
