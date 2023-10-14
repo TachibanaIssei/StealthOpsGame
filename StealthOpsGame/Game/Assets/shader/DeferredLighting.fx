@@ -113,7 +113,7 @@ float3 CalcDirectionLight(
         
         lig += CalcLighting(
             light.directionalLight[ligNo].direction,
-            light.directionalLight[ligNo].color.xyz,
+            light.directionalLight[ligNo].color.rbg,
             normal,
             toEye,
             albedoColor,

@@ -57,7 +57,7 @@ float CookTorranceSpecular(float3 L, float3 V, float3 N, float smooth)
 {
     // マイクロファセットが小さくなりすぎると、鏡面反射が強くなりすぎることがあるので、
     // 下限を0.5にした。
-    float microfacet = min( 0.5f, 1.0f - smooth );
+    float microfacet = min( 0.5f, smooth );
 
     // 金属度を垂直入射の時のフレネル反射率として扱う
     // 金属度が高いほどフレネル反射は大きくなる
@@ -108,10 +108,9 @@ float CalcDiffuseFromFresnel(float3 N, float3 L, float3 V, float smooth)
     // 光源に向かうベクトルと視線に向かうベクトルのハーフベクトルを求める
     float3 H = normalize(L+V);
     
-    //粗さは0.5で固定。
+    //粗さ(1からsmooth(滑らかさ)を引くと求められる)
     float roughness = 1.0f - smooth;
     
-    //これは
     float energyBias = lerp(0.0f, 0.5f, roughness);
     float energyFactor = lerp(1.0, 1.0/1.51, roughness);
 
@@ -167,7 +166,6 @@ float3 CalcLighting(
 
     // 金属度が高ければ、鏡面反射はスペキュラカラー、低ければ白
     // スペキュラカラーの強さを鏡面反射率として扱う
-
     spec *= lerp(float3(1.0f, 1.0f, 1.0f), specColor, metaric);
 
     // 滑らかさを使って、拡散反射光と鏡面反射光を合成する

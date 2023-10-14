@@ -31,6 +31,7 @@ private:
 	AnimationClip m_animationClips[enAnimationClip_Num];
 	ModelRender m_unityChan;
 	ModelRender m_unityChanGBuffer;
+	ModelRender m_sphere;
 	Vector3 m_position = Vector3(100.0f, 0.0f, 0.0f);
 	Vector3 m_position2 = Vector3(-100.0f,0.0f,0.0f);
 	Vector3 m_scale = Vector3::One;

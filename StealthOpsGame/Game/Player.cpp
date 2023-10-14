@@ -18,6 +18,10 @@ bool Player::Start()
 	m_unityChan.SetRotation(m_rotation);
 	m_unityChan.Update();
 
+	m_sphere.Init("Assets/modelData/unitychan/sphere.tkm");
+	m_sphere.SetPosition(Vector3(0.0f, 50.0f, 0.0f));
+	
+
 	m_sprite.Init("Assets/sprite/attackUP.DDS", 256, 256);
 	return true;
 }
@@ -92,9 +96,10 @@ void Player::Update()
 
 	m_unityChanGBuffer.SetTRS(m_position, m_rotation, m_scale);
 	m_unityChan.SetTRS(m_position2, m_rotation, m_scale);
+	m_sphere.SetRotation(m_rotation);
 	m_unityChanGBuffer.Update();
 	m_unityChan.Update();
-
+	m_sphere.Update();
 	m_sprite.Update();
 }
 
@@ -102,5 +107,6 @@ void Player::Render(RenderContext& rc)
 {
 	m_unityChanGBuffer.Draw(rc);
 	m_unityChan.Draw(rc);
+	m_sphere.Draw(rc);
 	//m_sprite.Draw(rc);
 }
