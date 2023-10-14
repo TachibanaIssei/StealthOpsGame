@@ -22,15 +22,15 @@ bool Game::Start()
 
 	InitFontRender();
 
-	Vector3 dir = Vector3(0.0f, -1.0f, 1.0f);
+	Vector3 dir = Vector3(1.0f, -1.0f, 0.0f);
 	dir.Normalize();
-	Vector3 color = Vector3(3.0f, 3.0f, 3.0f);
+	Vector3 color = Vector3(1.0f, 1.0f, 1.0f);
 	g_renderingEngine->SetDirectionLight(0, dir, color);
-	/*Vector3 dir1 = Vector3(-1.0f, -1.0f, 0.0f);
+	Vector3 dir1 = Vector3(-1.0f, -1.0f, 0.0f);
 	dir1.Normalize();
-	Vector3 color1 = Vector3(3.0f, 3.0f, 3.0f);
+	Vector3 color1 = Vector3(1.0f, 1.0f, 1.0f);
 	g_renderingEngine->SetDirectionLight(1, dir1, color1);
-	g_renderingEngine->SetDirectionLightCastShadow(1, true);*/
+	g_renderingEngine->SetDirectionLightCastShadow(1, true);
 	g_renderingEngine->SetAmbient({ 0.5f,0.5f,0.5f });
 	InitSkyCube();
 
