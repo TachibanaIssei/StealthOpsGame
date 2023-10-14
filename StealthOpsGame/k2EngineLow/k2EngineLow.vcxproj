@@ -254,6 +254,7 @@
     <ClCompile Include="AI\PathFinding\NaviMesh.cpp" />
     <ClCompile Include="AI\PathFinding\Path.cpp" />
     <ClCompile Include="AI\PathFinding\PathFinding.cpp" />
+    <ClCompile Include="mySourceCode\Camera\CameraCollisionSolver.cpp" />
     <ClCompile Include="mySourceCode\PostEffect\Bloom.cpp" />
     <ClCompile Include="mySourceCode\Shadow\CascadeShadowMapMatrix.cpp" />
     <ClCompile Include="mySourceCode\FontRender.cpp" />
@@ -316,7 +317,7 @@
     <ClCompile Include="math\Matrix.cpp" />
     <ClCompile Include="math\Vector.cpp" />
     <ClCompile Include="mySourceCode\ModelRender.cpp" />
-    <ClCompile Include="mySourceCode\SceneLight.cpp" />
+    <ClCompile Include="mySourceCode\Light\SceneLight.cpp" />
     <ClCompile Include="mySourceCode\Shadow\ShadowMapRender.cpp" />
     <ClCompile Include="online\SyncOnlineTwoPlayerMatchEngine.cpp" />
     <ClCompile Include="physics\BoxCollider.cpp" />
@@ -347,6 +348,7 @@
     <ClInclude Include="AI\PathFinding\NaviMesh.h" />
     <ClInclude Include="AI\PathFinding\Path.h" />
     <ClInclude Include="AI\PathFinding\PathFinding.h" />
+    <ClInclude Include="mySourceCode\Camera\CameraCollisionSolver.h" />
     <ClInclude Include="mySourceCode\PostEffect\Bloom.h" />
     <ClInclude Include="dbg\MyAssert.h" />
     <ClInclude Include="dbg\MyLog.h" />
@@ -415,7 +417,7 @@
     <ClInclude Include="math\Matrix.h" />
     <ClInclude Include="math\Vector.h" />
     <ClInclude Include="mySourceCode\ModelRender.h" />
-    <ClInclude Include="mySourceCode\SceneLight.h" />
+    <ClInclude Include="mySourceCode\Light\SceneLight.h" />
     <ClInclude Include="mySourceCode\Shadow\ShadowMapRender.h" />
     <ClInclude Include="online\SyncOnlineTwoPlayerMatchEngine.h" />
     <ClInclude Include="physics\BoxCollider.h" />

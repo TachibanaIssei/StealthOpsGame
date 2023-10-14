@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "MyRenderer.h"
-#include "SceneLight.h"
+#include "Light/SceneLight.h"
 #include "Shadow/ShadowMapRender.h"
 #include "PostEffect/PostEffect.h"
 
