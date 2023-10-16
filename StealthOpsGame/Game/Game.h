@@ -1,7 +1,9 @@
 ﻿#pragma once
-#include "Player.h"
-#include "BackGround.h"
 #include "../k2EngineLow/mySourceCode/SkyCube.h"
+
+class Player;
+class BackGround;
+class GameCamera;
 
 class Game : public IGameObject
 {
@@ -20,6 +22,7 @@ private:
 private:
 	Player* m_player = nullptr;
 	BackGround* m_backGround = nullptr;
+	GameCamera* m_gameCamera = nullptr;
 	SpriteRender m_spriteRender;
 	Vector3 m_position = Vector3::Zero;
 	Vector3 m_scale = Vector3::One;

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "../k2EngineLow/mySourceCode/Camera/SpringCamera.h"
+#include "DebugCamera.h"
 
 class GameCamera : public IGameObject
 {
@@ -10,10 +11,10 @@ public:
 	void Update() override final;
 
 private:
-	SpringCamera m_springCamera;
+	void Move();
+	void Rotation();
 
-	Vector3 m_position = Vector3::Zero;
-	Vector3 m_target = Vector3::Zero;
-	Vector3 m_toCameraPos = Vector3::Zero;
+private:
+	DebugCamera m_debugCamera;
 };
 
